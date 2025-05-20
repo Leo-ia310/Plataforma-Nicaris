@@ -49,7 +49,7 @@ const recentProperties = [
   {
     id: '1',
     title: 'Apartamento de lujo en centro',
-    price: '180.000 €',
+    price: '180.000 $',
     status: 'pending',
     createdBy: 'Carlos López',
     createdAt: '2023-05-19T14:30:00',
@@ -57,7 +57,7 @@ const recentProperties = [
   {
     id: '2',
     title: 'Chalet con piscina y jardín',
-    price: '320.000 €',
+    price: '320.000 $',
     status: 'approved',
     createdBy: 'María García',
     createdAt: '2023-05-18T10:15:00',
@@ -65,7 +65,7 @@ const recentProperties = [
   {
     id: '3',
     title: 'Local comercial en zona empresarial',
-    price: '145.000 €',
+    price: '145.000 $',
     status: 'pending',
     createdBy: 'Pedro Rodríguez',
     createdAt: '2023-05-17T16:45:00',
