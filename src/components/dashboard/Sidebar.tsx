@@ -204,7 +204,7 @@ const Sidebar = () => {
             <div className="flex items-center justify-between h-16 px-4 border-b">
               <Link to="/dashboard" className="flex items-center gap-2">
                 <Home className="h-6 w-6 text-realestate-primary" />
-                <span className="font-bold text-xl text-realestate-primary">RealEstate</span>
+                <span className="font-bold text-xl text-realestate-primary">Nicaris</span>
               </Link>
               <Button 
                 variant="ghost" 
