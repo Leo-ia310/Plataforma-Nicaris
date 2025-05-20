@@ -222,7 +222,7 @@ const PropertyForm = () => {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Precio (€)</FormLabel>
+                    <FormLabel>Precio ($)</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="150000" {...field} />
                     </FormControl>
