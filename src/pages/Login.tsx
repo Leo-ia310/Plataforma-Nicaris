@@ -10,10 +10,10 @@ const Login = () => {
           <Building className="h-12 w-12 text-realestate-primary" />
         </div>
         <h2 className="mt-3 text-center text-3xl font-extrabold text-gray-900">
-          Portal Inmobiliario
+          Nicaris Bienes Raices
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Plataforma de gestión para profesionales inmobiliarios
+          Plataforma de gestión de Nicaris
         </p>
       </div>
 
