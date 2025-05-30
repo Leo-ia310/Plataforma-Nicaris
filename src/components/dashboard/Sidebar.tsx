@@ -44,12 +44,6 @@ const SidebarLinks: SidebarLink[] = [
     allowedRoles: ["admin", "manager"]
   },
   {
-    label: "Mensajes",
-    path: "/messages",
-    icon: <MessageCircle className="h-5 w-5" />,
-    allowedRoles: ["admin", "manager", "captador"]
-  },
-  {
     label: "Documentos",
     path: "/documents",
     icon: <FileText className="h-5 w-5" />,

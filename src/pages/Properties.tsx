@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/dashboard/Sidebar';
 import { Button } from "@/components/ui/button";
@@ -27,95 +26,6 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
-
-// Datos simulados de propiedades
-const PROPERTIES_DATA = [
-  {
-    id: '1',
-    title: 'Apartamento de lujo en centro',
-    description: 'Precioso apartamento totalmente reformado en el centro de la ciudad. Materiales de primera calidad.',
-    price: 180000,
-    location: 'Madrid, Centro',
-    type: 'apartment',
-    status: 'new',
-    area: 85,
-    bedrooms: 2,
-    bathrooms: 1,
-    features: ['garage', 'elevator', 'furnished'],
-    images: ['https://images.unsplash.com/photo-1522708323590-d24dbb6b0267'],
-    createdAt: '2023-05-19T14:30:00',
-  },
-  {
-    id: '2',
-    title: 'Chalet con piscina y jardín',
-    description: 'Impresionante chalet con amplio jardín y piscina privada en urbanización tranquila.',
-    price: 320000,
-    location: 'Toledo, Urbanización Las Aves',
-    type: 'house',
-    status: 'used',
-    area: 210,
-    bedrooms: 4,
-    bathrooms: 3,
-    features: ['pool', 'garden', 'garage', 'security'],
-    images: ['https://images.unsplash.com/photo-1580587771525-78b9dba3b914'],
-    createdAt: '2023-05-18T10:15:00',
-  },
-  {
-    id: '3',
-    title: 'Local comercial en zona empresarial',
-    description: 'Local comercial bien situado en zona empresarial con gran tránsito. Perfecto para negocios.',
-    price: 145000,
-    location: 'Barcelona, Distrito Tecnológico',
-    type: 'commercial',
-    status: 'used',
-    area: 120,
-    features: ['security'],
-    images: ['https://images.unsplash.com/photo-1497366754035-f200968a6e72'],
-    createdAt: '2023-05-17T16:45:00',
-  },
-  {
-    id: '4',
-    title: 'Apartamento con vistas al mar',
-    description: 'Fantástico apartamento con increíbles vistas al mar. Perfecto como inversión para alquiler vacacional.',
-    price: 245000,
-    location: 'Málaga, Paseo Marítimo',
-    type: 'apartment',
-    status: 'used',
-    area: 95,
-    bedrooms: 3,
-    bathrooms: 2,
-    features: ['terrace', 'furnished', 'elevator'],
-    images: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750'],
-    createdAt: '2023-05-16T09:30:00',
-  },
-  {
-    id: '5',
-    title: 'Terreno urbanizable para construcción',
-    description: 'Parcela de terreno urbanizable con todos los servicios, lista para construir vivienda unifamiliar.',
-    price: 95000,
-    location: 'Segovia, Urbanización El Mirador',
-    type: 'land',
-    status: 'new',
-    area: 500,
-    images: ['https://images.unsplash.com/photo-1500382017468-9049fed747ef'],
-    createdAt: '2023-05-15T13:20:00',
-  },
-  {
-    id: '6',
-    title: 'Loft industrial reformado',
-    description: 'Espectacular loft completamente reformado en antigua fábrica. Espacios amplios y mucha luz natural.',
-    price: 198000,
-    location: 'Valencia, Zona Ruzafa',
-    type: 'apartment',
-    status: 'construction',
-    area: 110,
-    bedrooms: 1,
-    bathrooms: 1,
-    features: ['storage', 'furnished'],
-    images: ['https://images.unsplash.com/photo-1560448204-e02f11c3d0e2'],
-    createdAt: '2023-05-14T15:10:00',
-  },
-];
 
 // Tipos y mapas para filtrado y visualización
 const propertyTypes = [
@@ -147,6 +57,7 @@ const sortOptions = [
 const Properties = () => {
   const navigate = useNavigate();
   
+  const [propertiesData, setPropertiesData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -154,7 +65,48 @@ const Properties = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
-  const formatPrice = (price: number) => {
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1z535l_nlwJ-G3AnE16cqGossy4yBe0Wx4sNkpJ6ecxE/values/Backend2?key=AIzaSyBh30TBZk4lG-mAVfNe7cB8IzSaNvXZ77Q');
+        const data = await response.json();
+
+        // Verificar si data.values es un array
+        if (Array.isArray(data.values)) {
+          // Transformar los datos
+          const transformedData = data.values.slice(1).map(property => ({
+            id: property[0],
+            title: property[1],
+            description: property[2],
+            location: `${property[3]}, ${property[4]}, ${property[5]}`,
+            price: parseFloat(property[6].replace(/[$,]/g, '')),
+            type: property[7],
+            status: property[8],
+            bedrooms: parseInt(property[9], 10),
+            bathrooms: parseInt(property[10], 10),
+            area: parseInt(property[11], 10),
+            features: property[12] ? property[12].split(',') : [],
+          images: property[18]
+          ? property[18]
+        .split('\n') // separar múltiples IDs por línea
+      .map(id => `https://www.googleapis.com/drive/v3/files/${id.trim()}?alt=media&key=AIzaSyBh30TBZk4lG-mAVfNe7cB8IzSaNvXZ77Q`)
+      : [],
+            createdAt: new Date().toISOString(),
+          }));
+
+          setPropertiesData(transformedData);
+        } else {
+          console.error('La respuesta no contiene un array en data.values:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
+  const formatPrice = (price) => {
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
       currency: 'EUR',
@@ -162,12 +114,12 @@ const Properties = () => {
     }).format(price);
   };
 
-  const getPropertyTypeLabel = (type: string) => {
+  const getPropertyTypeLabel = (type) => {
     const propertyType = propertyTypes.find(t => t.value === type);
     return propertyType ? propertyType.label : type;
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status) => {
     const propertyStatus = {
       'new': 'Nuevo',
       'used': 'Usado',
@@ -177,7 +129,7 @@ const Properties = () => {
     return propertyStatus || status;
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     return {
       'new': 'bg-green-100 text-green-800 hover:bg-green-200',
       'used': 'bg-blue-100 text-blue-800 hover:bg-blue-200',
@@ -186,7 +138,7 @@ const Properties = () => {
   };
 
   // Aplicar filtros y ordenación
-  let filteredProperties = [...PROPERTIES_DATA];
+  let filteredProperties = [...propertiesData];
   
   // Filtro por término de búsqueda
   if (searchTerm) {
@@ -313,22 +265,33 @@ const Properties = () => {
                 {paginatedProperties.map((property) => (
                   <Card 
                     key={property.id}
-                    className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                    className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg cursor-pointer"
                     onClick={() => navigate(`/properties/${property.id}`)}
                   >
                     <div className="relative h-48">
-                      <img 
-                        src={property.images[0]} 
-                        alt={property.title}
-                        className="w-full h-full object-cover"
-                      />
+                      {property.images.length > 0 ? (
+                        <div className="flex flex-col">
+                          {property.images.map((image, index) => (
+                            <img 
+                              key={index}
+                              src={image} 
+                              alt={property.title}
+                              className="w-full max-h-48 h-auto object-cover mb-2" //w-full max-h-32 h-auto object-cover mb-2 //"w-full h-auto object-cover mb-2
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span>No hay imagen disponible</span>
+                        </div>
+                      )}
                       <div className="absolute top-2 right-2">
                         <Badge className={getStatusColor(property.status)}>
                           {getStatusLabel(property.status)}
                         </Badge>
                       </div>
                     </div>
-                    <CardContent className="p-4">
+                    <CardContent className="p-4 bg-gray-200">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="font-semibold text-lg line-clamp-1">{property.title}</h3>
                         <span className="font-bold text-realestate-primary">

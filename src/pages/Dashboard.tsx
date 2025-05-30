@@ -135,14 +135,7 @@ const Dashboard = () => {
               trend="up"
               trendValue="+15% este mes"
             />
-            <StatCard 
-              title="Mensajes" 
-              value="68" 
-              description="Conversaciones activas"
-              icon={<MessageCircle className="h-5 w-5" />}
-              trend="neutral"
-              trendValue="Sin cambios"
-            />
+
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

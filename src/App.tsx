@@ -9,11 +9,11 @@ import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
 import PropertyNew from "./pages/PropertyNew";
 import Users from "./pages/Users";
-import Messages from "./pages/Messages";
 import Documents from "./pages/Documents";
 import FAQ from "./pages/FAQ";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import PropertyDetails from "./pages/PropertyDetails";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +29,6 @@ const App = () => (
           <Route path="/properties" element={<Properties />} />
           <Route path="/properties/new" element={<PropertyNew />} />
           <Route path="/users" element={<Users />} />
-          <Route path="/messages" element={<Messages />} />
           <Route path="/documents" element={<Documents />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/settings" element={<Settings />} />
