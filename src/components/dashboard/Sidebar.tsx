@@ -38,23 +38,17 @@ const SidebarLinks: SidebarLink[] = [
     allowedRoles: ["admin", "manager", "captador"]
   },
   {
-    label: "Documentos",
-    path: "/documents",
-    icon: <FileText className="h-5 w-5" />,
-    allowedRoles: ["admin", "manager", "captador"]
-  },
-  {
     label: "FAQ",
     path: "/faq",
     icon: <HelpCircle className="h-5 w-5" />,
     allowedRoles: ["admin", "manager", "captador"]
   },
-  {
-    label: "Configuración",
-    path: "/settings",
-    icon: <Settings className="h-5 w-5" />,
-    allowedRoles: ["admin", "manager"]
-  }
+  //{
+   // label: "Configuración",
+   /// path: "/settings",
+   // icon: <Settings className="h-5 w-5" />,
+   // allowedRoles: ["admin", "manager"]
+ // }
 ];
 
 const Sidebar = () => {

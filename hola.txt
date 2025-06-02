@@ -1,0 +1,252 @@
+import { useState } from 'react';
+import Sidebar from '@/components/dashboard/Sidebar';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { 
+  FileText, 
+  Search, 
+  Upload, 
+  MoreHorizontal, 
+  Download, 
+  Edit,
+  Trash,
+  File
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// Datos simulados de documentos
+const DOCUMENTS_DATA = [
+  const DOCUMENTS_DATA = [
+  {
+    id: '1',
+    name: 'Contrato de arrendamiento.pdf',
+    type: 'pdf',
+    category: 'legal',
+    size: 2.5,
+    uploadedBy: 'Juan Pérez',
+    uploadedDate: '2023-05-19T14:30:00',
+    accessLevel: 'all',
+  },
+  {
+    id: '2',
+    name: 'Guía de captación 2023.docx',
+    type: 'docx',
+    category: 'guides',
+    size: 1.8,
+    uploadedBy: 'María García',
+    uploadedDate: '2023-05-18T10:15:00',
+    accessLevel: 'admin',
+  },
+  {
+    id: '3',
+    name: 'Políticas de empresa.pdf',
+    type: 'pdf',
+    category: 'policies',
+    size: 3.2,
+    uploadedBy: 'Juan Pérez',
+    uploadedDate: '2023-05-17T16:45:00',
+    accessLevel: 'all',
+  },
+  {
+    id: '4',
+    name: 'Formulario de tasación.xlsx',
+    type: 'xlsx',
+    category: 'forms',
+    size: 0.9,
+    uploadedBy: 'Carlos López',
+    uploadedDate: '2023-05-16T09:30:00',
+    accessLevel: 'captador',
+  },
+  {
+    id: '5',
+    name: 'Presentación comercial 2023.pptx',
+    type: 'pptx',
+    category: 'marketing',
+    size: 5.7,
+    uploadedBy: 'María García',
+    uploadedDate: '2023-05-15T13:20:00',
+    accessLevel: 'manager',
+  },
+  {
+    id: '6',
+    name: 'Informe anual 2022.pdf',
+    type: 'pdf',
+    category: 'reports',
+    size: 4.3,
+    uploadedBy: 'Juan Pérez',
+    uploadedDate: '2023-05-14T15:10:00',
+    accessLevel: 'admin',
+  },
+];
+];
+
+const documentCategories = [
+  // ... tus categorías de documentos
+];
+
+const documentAccessLevels = [
+  // ... tus niveles de acceso
+];
+
+const Documents = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [accessFilter, setAccessFilter] = useState('all');
+  const [documents, setDocuments] = useState(DOCUMENTS_DATA);
+  
+  // Estado para el modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newDocument, setNewDocument] = useState({
+    name: '',
+    type: 'pdf',
+    uploadedBy: '',
+    file: null,
+  });
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setNewDocument({ ...newDocument, file: e.target.files[0] });
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!newDocument.file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64data = reader.result as string;
+      const mimeType = newDocument.file.type;
+
+      // Aquí harías la petición POST a tu API de Google Apps Script
+      const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          file: base64data,
+          mimeType,
+          name: newDocument.name,
+          uploadedBy: newDocument.uploadedBy,
+          date: new Date().toISOString(),
+        }),
+      });
+
+      const result = await response.json();
+      if (result.status === "success") {
+        // Actualiza el estado de documentos
+        setDocuments([...documents, {
+          id: result.id, // Asegúrate de que tu API devuelva un ID
+          name: newDocument.name,
+          type: newDocument.type,
+          category: 'your_category', // Define cómo determinar la categoría
+          size: newDocument.file.size / 1024, // Tamaño en KB
+          uploadedBy: newDocument.uploadedBy,
+          uploadedDate: new Date().toISOString(),
+          accessLevel: 'all', // Define el nivel de acceso
+        }]);
+        setIsModalOpen(false); // Cierra el modal
+      }
+    };
+    reader.readAsDataURL(newDocument.file);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Sidebar />
+      <div className="lg:pl-64 min-h-screen">
+        <main className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Documentos</h1>
+              <p className="text-gray-500">Repositorio centralizado de documentos</p>
+            </div>
+            <Button onClick={() => setIsModalOpen(true)} className="bg-realestate-primary">
+              <Upload className="h-4 w-4 mr-2" />
+              Subir documento
+            </Button>
+          </div>
+
+          {/* Filtros */}
+          <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* ... tus filtros existentes */}
+          </div>
+
+          {/* Documentos */}
+          {/* ... tu lógica para mostrar documentos */}
+
+          {/* Modal para subir documento */}
+          {isModalOpen && (
+            <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+                <h2 className="text-lg font-bold mb-4">Subir Documento</h2>
+                <Input
+                  placeholder="Nombre del documento"
+                  value={newDocument.name}
+                  onChange={(e) => setNewDocument({ ...newDocument, name: e.target.value })}
+                  className="mb-4"
+                />
+                <Select value={newDocument.type} onValueChange={(value) => setNewDocument({ ...newDocument, type: value })} className="mb-4">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tipo de documento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pdf">PDF</SelectItem>
+                    <SelectItem value="docx">DOCX</SelectItem>
+                    <SelectItem value="xlsx">XLSX</SelectItem>
+                    <SelectItem value="pptx">PPTX</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="text"
+                  placeholder="Subido por"
+                  value={newDocument.uploadedBy}
+                  onChange={(e) => setNewDocument({ ...newDocument, uploadedBy: e.target.value })}
+                  className="mb-4"
+                />
+                <Input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="mb-4"
+                />
+                <div className="flex justify-end">
+                  <Button onClick={() => setIsModalOpen(false)} className="mr-2">Cancelar</Button>
+                  <Button onClick={handleUpload}>Subir</Button>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Documents;

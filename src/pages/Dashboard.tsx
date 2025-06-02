@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/dashboard/Sidebar';
@@ -26,23 +25,23 @@ import {
 
 // Datos simulados
 const propertyData = [
-  { name: "Ene", value: 12 },
-  { name: "Feb", value: 18 },
-  { name: "Mar", value: 16 },
-  { name: "Abr", value: 20 },
-  { name: "May", value: 24 },
-  { name: "Jun", value: 28 },
-  { name: "Jul", value: 30 },
+  { name: "Ene", value: 0},
+  { name: "Feb", value: 0 },
+  { name: "Mar", value: 0 },
+  { name: "Abr", value: 0 },
+  { name: "May", value: 0 },
+  { name: "Jun", value: 0 },
+  { name: "Jul", value: 0 },
 ];
 
 const visitsData = [
-  { name: "Ene", value: 56 },
-  { name: "Feb", value: 68 },
-  { name: "Mar", value: 75 },
-  { name: "Abr", value: 84 },
-  { name: "May", value: 98 },
-  { name: "Jun", value: 116 },
-  { name: "Jul", value: 124 },
+  { name: "Ene", value: 2 },
+  { name: "Feb", value: 0 },
+  { name: "Mar", value: 2},
+  { name: "Abr", value: 0 },
+  { name: "May", value: 0 },
+  { name: "Jun", value: 0 },
+  { name: "Jul", value: 0 },
 ];
 
 const recentProperties = [
@@ -72,19 +71,43 @@ const recentProperties = [
   },
 ];
 
+const predefinedUsers = [
+  { username: 'user1', password: 'pass1' },
+  { username: 'user2', password: 'pass2' },
+  { username: 'user3', password: 'pass3' },
+];
+
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-  
+  const [user, setUser ] = useState<any>(null);
+  const [totalProperties, setTotalProperties] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(predefinedUsers.length); // Contar usuarios predefinidos
+
   useEffect(() => {
     // Comprobar si el usuario está autenticado
     const userData = localStorage.getItem('user');
     if (userData) {
-      setUser(JSON.parse(userData));
+      setUser (JSON.parse(userData));
     } else {
       navigate('/'); // Redirigir al login si no hay usuario
     }
   }, [navigate]);
+
+  useEffect(() => {
+    // Obtener el total de propiedades desde la hoja de cálculo
+    const fetchPropertiesCount = async () => {
+      try {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbztO2NQTdQAJ56OrI-i8XeoBLbqNFXHU1DD0zyPcwqiDgVlb0K04upvPGLsYuvuc4-wEw/exec");
+        const data = await response.json();
+        // Suponiendo que 'data' es un arreglo de propiedades
+        setTotalProperties(data.length); // Contar el número de filas
+      } catch (error) {
+        console.error("Error al obtener el conteo de propiedades:", error);
+      }
+    };
+
+    fetchPropertiesCount();
+  }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -113,15 +136,15 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard 
               title="Propiedades Totales" 
-              value="152" 
+              value={totalProperties.toString()} // Mostrar el total de propiedades
               description="Propiedades activas en el sistema"
               icon={<Building className="h-5 w-5" />}
               trend="up"
-              trendValue="+6% este mes"
+              trendValue=""
             />
             <StatCard 
               title="Usuarios" 
-              value="24" 
+              value={4} // Mostrar el total de usuarios predefinidos
               description="Miembros del equipo activos"
               icon={<Users className="h-5 w-5" />}
               trend="up"
@@ -129,13 +152,12 @@ const Dashboard = () => {
             />
             <StatCard 
               title="Documentos" 
-              value="357" 
+              value="0" 
               description="Archivos en el repositorio"
               icon={<FileText className="h-5 w-5" />}
               trend="up"
               trendValue="+15% este mes"
             />
-
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -232,61 +254,6 @@ const Dashboard = () => {
                       />
                     </LineChart>
                   </ResponsiveContainer>
-                </div>
-              </Card>
-            </div>
-
-            {/* Propiedades recientes */}
-            <div>
-              <Card className="dashboard-card h-full">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-lg font-medium">Propiedades recientes</h3>
-                  <Button className="bg-realestate-primary" size="sm" onClick={() => navigate('/properties/new')}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    Nueva
-                  </Button>
-                </div>
-                <div className="space-y-4">
-                  {recentProperties.map((property) => (
-                    <div 
-                      key={property.id}
-                      className="flex flex-col p-3 border rounded-md hover:shadow-sm transition-shadow cursor-pointer"
-                      onClick={() => navigate(`/properties/${property.id}`)}
-                    >
-                      <div className="flex justify-between">
-                        <h4 className="font-medium text-sm">{property.title}</h4>
-                        <span className="font-bold text-realestate-primary text-sm">
-                          {property.price}
-                        </span>
-                      </div>
-                      <div className="mt-2 flex justify-between text-xs text-gray-500">
-                        <span>{property.createdBy}</span>
-                        <span>{formatDate(property.createdAt)}</span>
-                      </div>
-                      <div className="mt-2">
-                        {property.status === 'pending' ? (
-                          <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">
-                            Pendiente de revisión
-                          </span>
-                        ) : property.status === 'approved' ? (
-                          <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
-                            Aprobada
-                          </span>
-                        ) : (
-                          <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">
-                            Rechazada
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  <Button 
-                    variant="ghost" 
-                    className="w-full text-realestate-primary font-medium"
-                    onClick={() => navigate('/properties')}
-                  >
-                    Ver todas las propiedades
-                  </Button>
                 </div>
               </Card>
             </div>
