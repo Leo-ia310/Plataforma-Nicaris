@@ -172,7 +172,7 @@ const PropertyForm = () => {
     formData.append('fileNames', JSON.stringify(fileNames));
 
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbxHns5iz8ohO76W4q6HyrTwDGpsu_yNx1t4vI9cNGODmSPMk1nHdutplHSRCKhGm5gi_w/exec", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbzxkMfZ011JB5chdWUvqVjMzNjJ-_Q_4N_6LmZRqMYfW5hkX2N88bfBpQKcKdAC-TBfjQ/exec", {
         method: 'POST',
         body: formData,
       });
