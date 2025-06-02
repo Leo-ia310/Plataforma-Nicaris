@@ -38,12 +38,6 @@ const SidebarLinks: SidebarLink[] = [
     allowedRoles: ["admin", "manager", "captador"]
   },
   {
-    label: "Usuarios",
-    path: "/users",
-    icon: <Users className="h-5 w-5" />,
-    allowedRoles: ["admin", "manager"]
-  },
-  {
     label: "Documentos",
     path: "/documents",
     icon: <FileText className="h-5 w-5" />,
