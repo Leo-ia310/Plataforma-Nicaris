@@ -49,30 +49,30 @@ const propertySchema = z.object({
 });
 
 const propertyTypes = [
-  { value: "house", label: "Casa" },
-  { value: "apartment", label: "Apartamento" },
-  { value: "land", label: "Terreno" },
-  { value: "commercial", label: "Local Comercial" },
-  { value: "industrial", label: "Industrial" },
-  { value: "office", label: "Oficina" },
-  { value: "farm", label: "Finca" },
+  { value: "Casa", label: "Casa" },
+  { value: "Apartamento", label: "Apartamento" },
+  { value: "Terreno", label: "Terreno" },
+  { value: "Local Comercial", label: "Local Comercial" },
+  { value: "Industrial", label: "Industrial" },
+  { value: "Oficina", label: "Oficina" },
+  { value: "Finca", label: "Finca" },
 ];
 
 const propertyStatus = [
-  { value: "new", label: "Nuevo" },
-  { value: "used", label: "Usado" },
-  { value: "construction", label: "En construcción" },
+  { value: "Nuevo", label: "Nuevo" },
+  { value: "Usado", label: "Usado" },
+  { value: "En construcción", label: "En construcción" },
 ];
 
 const propertyFeatures = [
-  { id: "garage", label: "Garaje" },
-  { id: "pool", label: "Piscina" },
-  { id: "garden", label: "Jardín" },
-  { id: "security", label: "Seguridad 24h" },
-  { id: "elevator", label: "Ascensor" },
-  { id: "furnished", label: "Amueblado" },
-  { id: "terrace", label: "Terraza" },
-  { id: "storage", label: "Trastero" },
+  { id: "Garaje", label: "Garaje" },
+  { id: "Piscina", label: "Piscina" },
+  { id: "Jardín", label: "Jardín" },
+  { id: "Seguridad 24h", label: "Seguridad 24h" },
+  { id: "Ascensor", label: "Ascensor" },
+  { id: "Amueblado", label: "Amueblado" },
+  { id: "Terraza", label: "Terraza" },
+  { id: "Trastero", label: "Trastero" },
 ];
 
 const PropertyForm = () => {
