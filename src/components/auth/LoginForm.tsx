@@ -18,10 +18,12 @@ import { Lock, LogIn, Mail } from "lucide-react";
 
 // Predefined user list
 const USUARIOS_PREDEFINIDOS = [
-  { email: 'MaikelMartinez@Nicaris.com', password: 'Titogamer123', name: 'Administrador Principal', role: 'admin' },
-  { email: 'SamuelIssac@Nicaris.com', password: 'SAMISSAC123', name: 'Gerente General', role: 'manager' },
-  { email: 'KenerHernandez@Nicaris.com', password: 'KenerHER123', name: 'Captador Inmobiliario', role: 'captador' },
-  { email: 'GabrielCajina@Nicaris.com', password: 'GaCaji123', name: 'Captador Inmobiliario', role: 'captador' }
+  { email: 'MaikelMartinez@Nicaris.com', password: 'Titogamer123', name: 'Gerente general', role: 'admin' },
+  { email: 'SamuelIssac@Nicaris.com', password: 'SAMISSAC123', name: 'Gerente de proyectos', role: 'manager' },
+  { email: 'KenerHernandez@Nicaris.com', password: 'KenerHER123', name: 'Captador Kener', role: 'captador' },
+  { email: 'GabrielCajina@Nicaris.com', password: 'GaCaji123', name: 'Captador Gabriel Cajina', role: 'captador' },
+  { email: 'AndresMorales@Nicaris.com', password: 'AndresMorale225', name: 'Andres Morales', role: 'Vendedor' },
+  { email: 'MarlonCastillo@Nicaris.com', password: 'Marloncas421', name: 'Captador Marlon castillo', role: 'captador' }
 ];
 
 const formSchema = z.object({

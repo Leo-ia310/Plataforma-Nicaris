@@ -144,7 +144,7 @@ const Dashboard = () => {
             />
             <StatCard 
               title="Usuarios" 
-              value={4} // Mostrar el total de usuarios predefinidos
+              value={10} // Mostrar el total de usuarios predefinidos
               description="Miembros del equipo activos"
               icon={<Users className="h-5 w-5" />}
               trend="up"
