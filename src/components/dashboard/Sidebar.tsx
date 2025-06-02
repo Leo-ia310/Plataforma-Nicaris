@@ -29,19 +29,19 @@ const SidebarLinks: SidebarLink[] = [
     label: "Dashboard",
     path: "/dashboard",
     icon: <LayoutDashboard className="h-5 w-5" />,
-    allowedRoles: ["admin", "manager", "captador"]
+    allowedRoles: ["admin", "manager", "captador", "Vendedor"]
   },
   {
     label: "Propiedades",
     path: "/properties",
     icon: <Building className="h-5 w-5" />,
-    allowedRoles: ["admin", "manager", "captador"]
+    allowedRoles: ["admin", "manager", "captador", "Vendedor"]
   },
   {
     label: "FAQ",
     path: "/faq",
     icon: <HelpCircle className="h-5 w-5" />,
-    allowedRoles: ["admin", "manager", "captador"]
+    allowedRoles: ["admin", "manager", "captador", "Vendedor"]
   },
   //{
    // label: "Configuración",
