@@ -19,9 +19,10 @@ import { Lock, LogIn, Mail } from "lucide-react";
 
 // Lista de usuarios predefinidos
 const USUARIOS_PREDEFINIDOS = [
-  { email: 'admin@inmobiliaria.com', password: 'admin123', name: 'Administrador Principal', role: 'admin' },
-  { email: 'gerente@inmobiliaria.com', password: 'gerente123', name: 'Gerente General', role: 'manager' },
-  { email: 'captador@inmobiliaria.com', password: 'captador123', name: 'Captador Inmobiliario', role: 'captador' }
+  { email: 'MaikelMartinez@Nicaris.com', password: 'Titogamer123', name: 'Administrador Principal', role: 'admin' },
+  { email: 'SamuelIssac@Nicaris.com', password: 'SAMISSAC123', name: 'Gerente General', role: 'manager' },
+  { email: 'KenerHernandez@Nicaris.com', password: 'KenerHER123', name: 'Captador Inmobiliario', role: 'captador' },
+  { email: 'GabrielCajina@Nicaris.com', password: 'GaCaji123', name: 'Captador Inmobiliario', role: 'captador' }
 ];
 
 const formSchema = z.object({
@@ -77,7 +78,7 @@ const LoginForm = () => {
   }
 
   return (
-    <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-lg">
+    <div className="w-full max-w-md mx-auto p-8 space-y-8 bg-white rounded-lg shadow-lg ">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-realestate-primary">Iniciar Sesión</h2>
         <p className="mt-2 text-sm text-gray-600">
@@ -168,12 +169,6 @@ const LoginForm = () => {
         </form>
       </Form>
       
-      <div className="mt-4 text-center text-xs text-gray-500">
-        <p>Cuentas de demostración:</p>
-        <p className="mt-1">admin@inmobiliaria.com / admin123</p>
-        <p>gerente@inmobiliaria.com / gerente123</p>
-        <p>captador@inmobiliaria.com / captador123</p>
-      </div>
     </div>
   );
 };

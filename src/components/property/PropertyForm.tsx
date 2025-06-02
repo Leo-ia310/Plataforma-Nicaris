@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+
 
 import {
   Form,
@@ -101,6 +102,32 @@ const PropertyForm = () => {
     },
   });
 
+  useEffect(() => {
+  const draft = localStorage.getItem('propertyDraft');
+  const images = localStorage.getItem('propertyImages');
+
+  if (draft) {
+    try {
+      const parsedDraft = JSON.parse(draft);
+      form.reset(parsedDraft);
+      toast.info("Se cargó un borrador guardado automáticamente");
+    } catch (error) {
+      console.error("Error al cargar el borrador:", error);
+      toast.error("Error al cargar los datos del borrador");
+    }
+  }
+
+  if (images) {
+    try {
+      const imageNames = JSON.parse(images);
+      const files = imageNames.map(name => new File([], name));
+      setUploadedImages(files);
+    } catch (error) {
+      console.error("Error al cargar imágenes del borrador:", error);
+    }
+  }
+}, [form]);
+
   const onImagesChange = (files: File[]) => {
     setUploadedImages(files);
   };
@@ -153,6 +180,8 @@ const PropertyForm = () => {
       const result = await response.json();
       if (result.status === "success") {
         toast.success("Propiedad enviada exitosamente");
+        localStorage.removeItem('propertyDraft');
+        localStorage.removeItem('propertyImages');
         navigate("/properties");
       } else {
         toast.error("Error al enviar la propiedad: " + result.message);
@@ -165,15 +194,28 @@ const PropertyForm = () => {
     }
   };
 
-  function saveDraft() {
-    const formValues = form.getValues();
-    localStorage.setItem('propertyDraft', JSON.stringify({
-      ...formValues,
-      draftDate: new Date().toISOString()
-    }));
-    
-    toast.success("Borrador guardado exitosamente");
+  
+async function saveDraft() {
+  const formValues = form.getValues();
+
+  // Convertir imágenes a base64
+  const imagesBase64 = await Promise.all(
+    uploadedImages.map(file => convertToBase64(file))
+  );
+
+  // Guardar el borrador del formulario
+  localStorage.setItem('propertyDraft', JSON.stringify({
+    ...formValues,
+    draftDate: new Date().toISOString()
+  }));
+
+  // Guardar imágenes como base64
+  if (imagesBase64.length > 0) {
+    localStorage.setItem('propertyImagesBase64', JSON.stringify(imagesBase64));
   }
+
+  toast.success("Borrador guardado exitosamente");
+}
   
   const showFarmFeatures = form.watch("propertyType") === "farm";
 

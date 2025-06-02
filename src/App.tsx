@@ -8,7 +8,6 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
 import PropertyNew from "./pages/PropertyNew";
-import Users from "./pages/Users";
 import Documents from "./pages/Documents";
 import FAQ from "./pages/FAQ";
 import Settings from "./pages/Settings";
@@ -29,7 +28,6 @@ const App = () => (
           <Route path="/properties" element={<Properties />} />
           <Route path="/properties/:id" element={<PropertyDetails />} />
           <Route path="/properties/new" element={<PropertyNew />} />
-          <Route path="/users" element={<Users />} />
           <Route path="/documents" element={<Documents />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/settings" element={<Settings />} />

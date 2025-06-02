@@ -22,6 +22,7 @@ interface Property {
   manzanas: string;
   hasWell: boolean;
   hasFences: boolean;
+  hasWater: boolean; // Nuevo campo para agua
   images: string[];
   createdAt: string;
 }
@@ -69,6 +70,7 @@ const PropertyDetails: React.FC = () => {
             manzanas: foundProperty.manzanas || '',
             hasWell: foundProperty.hasWell === 'Sí',
             hasFences: foundProperty.hasFences === 'Sí',
+            hasWater: foundProperty.hasWater === 'Sí', // Nuevo campo para agua
             images: foundProperty.images.map(imageId => 
               `https://www.googleapis.com/drive/v3/files/${imageId.trim()}?alt=media&key=${API_KEY}`
             ), // Convertir a URLs públicas
@@ -132,10 +134,10 @@ const PropertyDetails: React.FC = () => {
         <div className="container">
           <div className="flex justify-center">
             {/* Property Images and Info - Left Side */}
-            <div className=" bg-white mx-auto text-black w-[100%]">
+            <div className="bg-white mx-auto text-black w-[100%]">
               {/* Image Gallery */}
               <div className="mb-8 bg-white">
-                <div className="relative w-full h-[25rem] rounded-lg overflow-hidden mb-3"> {/* Altura ajustada a 12rem */}
+                <div className="relative w-full h-[25rem] rounded-lg overflow-hidden mb-3">
                   {property.images.map((image, idx) => (
                     <div
                       key={idx}
@@ -222,6 +224,13 @@ const PropertyDetails: React.FC = () => {
                 </div>
               </div>
 
+              {/* Servicios */}
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold mb-3">Servicios</h2>
+                <p>Agua: {property.hasWater ? 'Sí' : 'No'}</p>
+                <p>Cercado: {property.hasFences ? 'Sí' : 'No'}</p>
+              </div>
+
               {/* Location Map - Placeholder for now */}
               <div className="mb-8">
                 <h2 className="text-xl font-semibold mb-3">Ubicación</h2>
@@ -240,4 +249,3 @@ const PropertyDetails: React.FC = () => {
 };
 
 export default PropertyDetails;
-
