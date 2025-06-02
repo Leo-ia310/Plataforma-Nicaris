@@ -14,6 +14,8 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import PropertyDetails from "./pages/PropertyDetails";
 
+
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -37,5 +39,7 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+
+
 
 export default App;

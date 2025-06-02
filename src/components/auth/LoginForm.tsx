@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -17,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Lock, LogIn, Mail } from "lucide-react";
 
-// Lista de usuarios predefinidos
+// Predefined user list
 const USUARIOS_PREDEFINIDOS = [
   { email: 'MaikelMartinez@Nicaris.com', password: 'Titogamer123', name: 'Administrador Principal', role: 'admin' },
   { email: 'SamuelIssac@Nicaris.com', password: 'SAMISSAC123', name: 'Gerente General', role: 'manager' },
@@ -47,11 +46,19 @@ const LoginForm = () => {
     },
   });
 
+  useEffect(() => {
+    // Check if user is already logged in
+    const user = localStorage.getItem('user');
+    if (user) {
+      navigate('/dashboard'); // Redirect to dashboard if already logged in
+    }
+  }, [navigate]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setError('');
     
-    // Validar las credenciales contra la lista de usuarios predefinidos
+    // Validate credentials against predefined user list
     const usuarioEncontrado = USUARIOS_PREDEFINIDOS.find(
       user => user.email === values.email && user.password === values.password
     );
@@ -60,7 +67,7 @@ const LoginForm = () => {
       setIsLoading(false);
       
       if (usuarioEncontrado) {
-        // Guardar información del usuario en localStorage
+        // Store user information in localStorage
         localStorage.setItem('user', JSON.stringify({
           id: usuarioEncontrado.email,
           name: usuarioEncontrado.name,
