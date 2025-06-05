@@ -66,9 +66,9 @@ const Properties = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const fetchProperties = async () => {//https://script.google.com/macros/s/AKfycbztO2NQTdQAJ56OrI-i8XeoBLbqNFXHU1DD0zyPcwqiDgVlb0K04upvPGLsYuvuc4-wEw/exec/1z535l_nlwJ-G3AnE16cqGossy4yBe0Wx4sNkpJ6ecxE
+    const fetchProperties = async () => { 
       try {
-        const response = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1z535l_nlwJ-G3AnE16cqGossy4yBe0Wx4sNkpJ6ecxE/values/Backend2?key=AIzaSyBh30TBZk4lG-mAVfNe7cB8IzSaNvXZ77Q');
+        const response = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1z535l_nlwJ-G3AnE16cqGossy4yBe0Wx4sNkpJ6ecxE/values/Backend2?key=AIzaSyDqkyWiU-HicT3Z5ltVxomucHt671y0Tro');
         const data = await response.json();
 
         if (Array.isArray(data.values)) {
@@ -87,7 +87,7 @@ const Properties = () => {
             images: property[19]
               ? property[19]
                 .split('\n')
-                .map(id => `https://www.googleapis.com/drive/v3/files/${id.trim()}?alt=media&key=AIzaSyBh30TBZk4lG-mAVfNe7cB8IzSaNvXZ77Q`)//AIzaSyBh30TBZk4lG-mAVfNe7cB8IzSaNvXZ77Q
+                .map(id => `https://www.googleapis.com/drive/v3/files/${id.trim()}?alt=media&key=AIzaSyDqkyWiU-HicT3Z5ltVxomucHt671y0Tro`)
               : [],
             createdAt: new Date().toISOString(),
           }));
