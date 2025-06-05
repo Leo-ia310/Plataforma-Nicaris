@@ -7,7 +7,6 @@ import { toast } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-
 import {
   Form,
   FormControl,
@@ -39,13 +38,52 @@ const propertySchema = z.object({
   price: z.string().min(1, { message: "Precio es requerido" }),
   propertyType: z.string().min(1, { message: "Tipo de propiedad es requerido" }),
   status: z.string().min(1, { message: "Estado es requerido" }),
+  area: z.string().optional(),
+  manzanas: z.string().optional(),
   bedrooms: z.string().optional(),
   bathrooms: z.string().optional(),
-  area: z.string().optional(),
-  features: z.array(z.string()).optional(),
-  manzanas: z.string().optional(),
+  floors: z.string().optional(),
+  areaBuilt: z.string().optional(),
+  parkingSpaces: z.string().optional(),
+  furniture: z.string().optional(),
+  hasCaretakerHouse: z.boolean().optional(),
+  hasStorageRoom: z.boolean().optional(),
+  terrainType: z.string().optional(),
+  topography: z.string().optional(),
+  soilType: z.string().optional(),
+  landUse: z.string().optional(),
+  mainCrops: z.string().optional(),
+  citrusTrees: z.string().optional(),
+  fruitTrees: z.string().optional(),
+  irrigationSystem: z.string().optional(),
+  hasCattleInfrastructure: z.boolean().optional(),
+  pastureType: z.string().optional(),
+  waterForAnimals: z.string().optional(),
+  hasWater: z.boolean().optional(),
+  hasElectricity: z.boolean().optional(),
   hasWell: z.boolean().optional(),
+  waterSource: z.string().optional(),
+  internetAvailable: z.boolean().optional(),
   hasFences: z.boolean().optional(),
+  hasSepticTank: z.boolean().optional(),
+  mountainView: z.boolean().optional(),
+  oceanView: z.boolean().optional(),
+  riverAccess: z.boolean().optional(),
+  lakeAccess: z.boolean().optional(),
+  gatedCommunity: z.boolean().optional(),
+  isInSafeZone: z.boolean().optional(),
+  touristArea: z.boolean().optional(),
+  hasDeed: z.boolean().optional(),
+  hasSurvey: z.boolean().optional(),
+  propertyTaxStatus: z.boolean().optional(),
+  isBankFinancingAvailable: z.boolean().optional(),
+  restrictions: z.string().optional(),
+  photos: z.array(z.string()).optional(),
+  videoUrl: z.any().optional(),
+  floorPlan: z.any().optional(),
+  features: z.array(z.string()).optional(),
+  captador: z.string().min(1, { message: "Captador es requerido" }),
+  numberproperty: z.string().min(1),
 });
 
 const propertyTypes = [
@@ -95,38 +133,76 @@ const PropertyForm = () => {
       bedrooms: "",
       bathrooms: "",
       area: "",
-      features: [],
       manzanas: "",
+      floors: "",
+      areaBuilt: "",
+      parkingSpaces: "",
+      furniture: "",
+      hasCaretakerHouse: false,
+      hasStorageRoom: false,
+      terrainType: "",
+      topography: "",
+      soilType: "",
+      landUse: "",
+      mainCrops: "",
+      citrusTrees: "",
+      fruitTrees: "",
+      irrigationSystem: "",
+      hasCattleInfrastructure: false,
+      pastureType: "",
+      waterForAnimals: "",
+      hasWater: false,
+      hasElectricity: false,
       hasWell: false,
+      waterSource: "",
+      internetAvailable: false,
       hasFences: false,
+      hasSepticTank: false,
+      mountainView: false,
+      oceanView: false,
+      riverAccess: false,
+      lakeAccess: false,
+      gatedCommunity: false,
+      isInSafeZone: false,
+      touristArea: false,
+      hasDeed: false,
+      hasSurvey: false,
+      propertyTaxStatus: false,
+      isBankFinancingAvailable: false,
+      restrictions: "",
+      videoUrl: "",
+      floorPlan: "",
+      features: [],
+      captador: "",
+      numberproperty: "",
     },
   });
 
   useEffect(() => {
-  const draft = localStorage.getItem('propertyDraft');
-  const images = localStorage.getItem('propertyImages');
+    const draft = localStorage.getItem('propertyDraft');
+    const images = localStorage.getItem('propertyImages');
 
-  if (draft) {
-    try {
-      const parsedDraft = JSON.parse(draft);
-      form.reset(parsedDraft);
-      toast.info("Se cargó un borrador guardado automáticamente");
-    } catch (error) {
-      console.error("Error al cargar el borrador:", error);
-      toast.error("Error al cargar los datos del borrador");
+    if (draft) {
+      try {
+        const parsedDraft = JSON.parse(draft);
+        form.reset(parsedDraft);
+        toast.info("Se cargó un borrador guardado automáticamente");
+      } catch (error) {
+        console.error("Error al cargar el borrador:", error);
+        toast.error("Error al cargar los datos del borrador");
+      }
     }
-  }
 
-  if (images) {
-    try {
-      const imageNames = JSON.parse(images);
-      const files = imageNames.map(name => new File([], name));
-      setUploadedImages(files);
-    } catch (error) {
-      console.error("Error al cargar imágenes del borrador:", error);
+    if (images) {
+      try {
+        const imageNames = JSON.parse(images);
+        const files = imageNames.map(name => new File([], name));
+        setUploadedImages(files);
+      } catch (error) {
+        console.error("Error al cargar imágenes del borrador:", error);
+      }
     }
-  }
-}, [form]);
+  }, [form]);
 
   const onImagesChange = (files: File[]) => {
     setUploadedImages(files);
@@ -137,7 +213,7 @@ const PropertyForm = () => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => {
-        const base64 = reader.result?.toString().split(',')[1]; // Obtener solo la parte base64
+        const base64 = reader.result?.toString().split(',')[1];
         resolve(base64 || '');
       };
       reader.onerror = (error) => reject(error);
@@ -146,7 +222,7 @@ const PropertyForm = () => {
 
   const onSubmit = async (values: z.infer<typeof propertySchema>) => {
     setIsLoading(true);
-    
+
     const imagesBase64 = await Promise.all(uploadedImages.map(convertToBase64));
     const mimeTypes = uploadedImages.map(file => file.type);
     const fileNames = uploadedImages.map(file => file.name);
@@ -163,16 +239,68 @@ const PropertyForm = () => {
     formData.append('bedrooms', values.bedrooms || '');
     formData.append('bathrooms', values.bathrooms || '');
     formData.append('area', values.area || '');
-    formData.append('features', JSON.stringify(values.features));
     formData.append('manzanas', values.manzanas || '');
+    formData.append('floors', values.floors || '');
+    formData.append('areaBuilt', values.areaBuilt || '');
+    formData.append('parkingSpaces', values.parkingSpaces || '');
+    formData.append('furniture', values.furniture || '');
+    formData.append('hasCaretakerHouse', values.hasCaretakerHouse ? "true" : "false");
+    formData.append('hasStorageRoom', values.hasStorageRoom ? "true" : "false");
+    formData.append('terrainType', values.terrainType || '');
+    formData.append('topography', values.topography || '');
+    formData.append('soilType', values.soilType || '');
+    formData.append('landUse', values.landUse || '');
+    formData.append('mainCrops', values.mainCrops || '');
+    formData.append('citrusTrees', values.citrusTrees || '');
+    formData.append('fruitTrees', values.fruitTrees || '');
+    formData.append('irrigationSystem', values.irrigationSystem || '');
+    formData.append('hasCattleInfrastructure', values.hasCattleInfrastructure ? "true" : "false");
+    formData.append('pastureType', values.pastureType || '');
+    formData.append('waterForAnimals', values.waterForAnimals || '');
+    formData.append('hasWater', values.hasWater ? "true" : "false");
+    formData.append('hasElectricity', values.hasElectricity ? "true" : "false");
     formData.append('hasWell', values.hasWell ? "true" : "false");
+    formData.append('waterSource', values.waterSource || '');
+    formData.append('internetAvailable', values.internetAvailable ? "true" : "false");
     formData.append('hasFences', values.hasFences ? "true" : "false");
+    formData.append('hasSepticTank', values.hasSepticTank ? "true" : "false");
+    formData.append('mountainView', values.mountainView ? "true" : "false");
+    formData.append('oceanView', values.oceanView ? "true" : "false");
+    formData.append('riverAccess', values.riverAccess ? "true" : "false");
+    formData.append('lakeAccess', values.lakeAccess ? "true" : "false");
+    formData.append('gatedCommunity', values.gatedCommunity ? "true" : "false");
+    formData.append('isInSafeZone', values.isInSafeZone ? "true" : "false");
+    formData.append('touristArea', values.touristArea ? "true" : "false");
+    formData.append('hasDeed', values.hasDeed ? "true" : "false");
+    formData.append('hasSurvey', values.hasSurvey ? "true" : "false");
+    formData.append('propertyTaxStatus', values.propertyTaxStatus ? "true" : "false");
+    formData.append('isBankFinancingAvailable', values.isBankFinancingAvailable ? "true" : "false");
+    formData.append('restrictions', values.restrictions || '');
+    formData.append('numberproperty', values.numberproperty),
+    formData.append('captador', values.captador);
+    if (values.videoUrl instanceof File) {
+      const videoBase64 = await convertToBase64(values.videoUrl);
+    formData.append('videoUrl', videoBase64);
+    formData.append('videoFileName', values.videoUrl.name);
+    formData.append('videoMimeType', values.videoUrl.type);
+    } else {
+    formData.append('videoUrl', '');
+    }
+    if (values.floorPlan instanceof File) {
+    const floorPlanBase64 = await convertToBase64(values.floorPlan);
+    formData.append('floorPlan', floorPlanBase64);
+    formData.append('floorPlanFileName', values.floorPlan.name);
+    formData.append('floorPlanMimeType', values.floorPlan.type);
+    } else {
+    formData.append('floorPlan', '');
+    }
+    formData.append('features', JSON.stringify(values.features));
     formData.append('images', JSON.stringify(imagesBase64));
     formData.append('mimeTypes', JSON.stringify(mimeTypes));
     formData.append('fileNames', JSON.stringify(fileNames));
 
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbzxkMfZ011JB5chdWUvqVjMzNjJ-_Q_4N_6LmZRqMYfW5hkX2N88bfBpQKcKdAC-TBfjQ/exec", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbwlPidagkYC5LpzGMc17GFzNQtuM2rDf10xQsZo7UeUMMXUu3ofGv73Heq1wyf1n2VLww/exec", {
         method: 'POST',
         body: formData,
       });
@@ -194,30 +322,26 @@ const PropertyForm = () => {
     }
   };
 
-  
-async function saveDraft() {
-  const formValues = form.getValues();
+  async function saveDraft() {
+    const formValues = form.getValues();
 
-  // Convertir imágenes a base64
-  const imagesBase64 = await Promise.all(
-    uploadedImages.map(file => convertToBase64(file))
-  );
+    const imagesBase64 = await Promise.all(
+      uploadedImages.map(file => convertToBase64(file))
+    );
 
-  // Guardar el borrador del formulario
-  localStorage.setItem('propertyDraft', JSON.stringify({
-    ...formValues,
-    draftDate: new Date().toISOString()
-  }));
+    localStorage.setItem('propertyDraft', JSON.stringify({
+      ...formValues,
+      draftDate: new Date().toISOString()
+    }));
 
-  // Guardar imágenes como base64
-  if (imagesBase64.length > 0) {
-    localStorage.setItem('propertyImagesBase64', JSON.stringify(imagesBase64));
+    if (imagesBase64.length > 0) {
+      localStorage.setItem('propertyImagesBase64', JSON.stringify(imagesBase64));
+    }
+
+    toast.success("Borrador guardado exitosamente");
   }
 
-  toast.success("Borrador guardado exitosamente");
-}
-  
-  const showFarmFeatures = form.watch("propertyType") === "farm";
+  const showFarmFeatures = form.watch("propertyType") === "Finca";
 
   return (
     <div className="form-container mb-12">
@@ -227,24 +351,29 @@ async function saveDraft() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="w-full grid grid-cols-3 mb-6">
-          <TabsTrigger value="information" className="flex items-center gap-2">
+        <TabsList className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <TabsTrigger value="general" className="flex items-center gap-2 justify-center">
             <FileText className="h-4 w-4" />
-            <span>Información</span>
+            <span>Datos Generales</span>
           </TabsTrigger>
-          <TabsTrigger value="location" className="flex items-center gap-2">
+          <TabsTrigger value="location" className="flex items-center gap-2 justify-center">
             <MapPin className="h-4 w-4" />
             <span>Ubicación</span>
           </TabsTrigger>
-          <TabsTrigger value="features" className="flex items-center gap-2">
+          <TabsTrigger value="construction" className="flex items-center gap-2 justify-center">
             <Building className="h-4 w-4" />
-            <span>Características</span>
+            <span>Construcción & Terreno</span>
+          </TabsTrigger>
+          <TabsTrigger value="extras" className="flex items-center gap-2 justify-center">
+            <Droplet className="h-4 w-4" />
+            <span>Servicios & Extras</span>
           </TabsTrigger>
         </TabsList>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <TabsContent value="information" className="space-y-6">
+            {/* Datos Generales */}
+            <TabsContent value="general" className="space-y-6">
               <FormField control={form.control} name="title" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Título de la propiedad</FormLabel>
@@ -254,7 +383,6 @@ async function saveDraft() {
                   <FormMessage />
                 </FormItem>
               )} />
-
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descripción</FormLabel>
@@ -264,7 +392,6 @@ async function saveDraft() {
                   <FormMessage />
                 </FormItem>
               )} />
-
               <FormField control={form.control} name="price" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Precio ($)</FormLabel>
@@ -274,7 +401,6 @@ async function saveDraft() {
                   <FormMessage />
                 </FormItem>
               )} />
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField control={form.control} name="propertyType" render={({ field }) => (
                   <FormItem>
@@ -296,7 +422,6 @@ async function saveDraft() {
                     <FormMessage />
                   </FormItem>
                 )} />
-
                 <FormField control={form.control} name="status" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Estado</FormLabel>
@@ -318,10 +443,10 @@ async function saveDraft() {
                   </FormItem>
                 )} />
               </div>
-
               <PropertyImageUpload onImagesChange={onImagesChange} />
             </TabsContent>
 
+            {/* Ubicación */}
             <TabsContent value="location" className="space-y-6">
               <FormField control={form.control} name="address" render={({ field }) => (
                 <FormItem>
@@ -332,7 +457,6 @@ async function saveDraft() {
                   <FormMessage />
                 </FormItem>
               )} />
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField control={form.control} name="city" render={({ field }) => (
                   <FormItem>
@@ -343,7 +467,6 @@ async function saveDraft() {
                     <FormMessage />
                   </FormItem>
                 )} />
-
                 <FormField control={form.control} name="state" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Provincia</FormLabel>
@@ -354,17 +477,10 @@ async function saveDraft() {
                   </FormItem>
                 )} />
               </div>
-
-              <div className="h-64 bg-gray-100 rounded-md flex items-center justify-center">
-                <div className="text-center text-gray-500">
-                  <MapPin className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                  <p>Vista previa del mapa</p>
-                  <p className="text-xs">(Se implementará integración con mapa)</p>
-                </div>
-              </div>
             </TabsContent>
 
-            <TabsContent value="features" className="space-y-6">
+            {/* Construcción y Terreno */}
+            <TabsContent value="construction" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField control={form.control} name="bedrooms" render={({ field }) => (
                   <FormItem>
@@ -375,7 +491,6 @@ async function saveDraft() {
                     <FormMessage />
                   </FormItem>
                 )} />
-
                 <FormField control={form.control} name="bathrooms" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Baños</FormLabel>
@@ -385,7 +500,6 @@ async function saveDraft() {
                     <FormMessage />
                   </FormItem>
                 )} />
-
                 <FormField control={form.control} name="area" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Superficie (m²)</FormLabel>
@@ -400,7 +514,6 @@ async function saveDraft() {
               {showFarmFeatures && (
                 <div className="border p-4 rounded-md bg-amber-50 space-y-4">
                   <h3 className="font-medium text-amber-800">Características específicas para fincas</h3>
-                  
                   <FormField control={form.control} name="manzanas" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="flex items-center gap-2">
@@ -416,51 +529,401 @@ async function saveDraft() {
                       <FormMessage />
                     </FormItem>
                   )} />
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField control={form.control} name="hasWell" render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="flex items-center gap-2 cursor-pointer">
-                            <Droplet className="h-4 w-4" />
-                            <span>Pozo de agua</span>
-                          </FormLabel>
-                          <FormDescription>
-                            La propiedad cuenta con pozo de agua propio
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )} />
-                    
-                    <FormField control={form.control} name="hasFences" render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel className="flex items-center gap-2 cursor-pointer">
-                            <Fence className="h-4 w-4" />
-                            <span>Cercado perimetral</span>
-                          </FormLabel>
-                          <FormDescription>
-                            La propiedad cuenta con cercas en todo el perímetro
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )} />
-                  </div>
                 </div>
               )}
-              
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <FormField control={form.control} name="floors" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Niveles / Plantas</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="2" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="areaBuilt" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Área construida (m²)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="100" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="parkingSpaces" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Espacios de parqueo</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="2" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+
+              <FormField control={form.control} name="furniture" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amueblado</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona opción" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Sí">Sí</SelectItem>
+                        <SelectItem value="Parcial">Parcial</SelectItem>
+                        <SelectItem value="No">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <FormField control={form.control} name="hasCaretakerHouse" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Casa de cuidador</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="hasStorageRoom" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Bodega o cuarto de herramientas</FormLabel>
+                  </FormItem>
+                )} />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <FormField control={form.control} name="terrainType" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de terreno</FormLabel>
+                    <FormControl>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Plano">Plano</SelectItem>
+                          <SelectItem value="Colinas">Colinas</SelectItem>
+                          <SelectItem value="Mixto">Mixto</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="topography" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Topografía</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Nivelado, Pendiente..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <FormField control={form.control} name="soilType" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de suelo</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Arcilloso, Arenoso, Fértil..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="landUse" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Uso del terreno</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Agrícola, Ganadero, Residencial, Turístico..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+            </TabsContent>
+
+            {/* Servicios & Extras */}
+            <TabsContent value="extras" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField control={form.control} name="mainCrops" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cultivos principales</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Maíz, café..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="citrusTrees" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Árboles cítricos</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Cantidad" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="fruitTrees" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Otros árboles frutales</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Cantidad o descripción" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="irrigationSystem" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sistema de riego</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Sí, No, Por gravedad..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <FormField control={form.control} name="hasCattleInfrastructure" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Corrales / infraestructura ganadera</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="pastureType" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de pasto</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Tipo de pasto" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              </div>
+
+              <FormField control={form.control} name="waterForAnimals" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Agua para animales</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Sí/No, tipo" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <FormField control={form.control} name="hasWater" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Agua potable</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="hasElectricity" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Energía eléctrica</FormLabel>
+                  </FormItem>
+                )} />
+              </div>
+
+              <FormField control={form.control} name="waterSource" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fuente de agua</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Municipal, Pozo, Río..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <FormField control={form.control} name="internetAvailable" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Internet disponible</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="hasSepticTank" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Tanque séptico</FormLabel>
+                  </FormItem>
+                )} />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <FormField control={form.control} name="mountainView" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Vista a montañas</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="oceanView" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Vista al mar</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="riverAccess" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Acceso a río</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="lakeAccess" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Acceso a lago</FormLabel>
+                  </FormItem>
+                )} />
+              </div>
+
+              <FormField control={form.control} name="gatedCommunity" render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel>En residencial privado</FormLabel>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="isInSafeZone" render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel>Zona segura</FormLabel>
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="touristArea" render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel>Zona turística</FormLabel>
+                </FormItem>
+              )} />
+
+              {/* Documentación y legal */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <FormField control={form.control} name="hasDeed" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Escritura pública</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="hasSurvey" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Plano catastral</FormLabel>
+                  </FormItem>
+                )} />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <FormField control={form.control} name="propertyTaxStatus" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Impuestos al día</FormLabel>
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="isBankFinancingAvailable" render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel>Financiamiento disponible</FormLabel>
+                  </FormItem>
+                )} />
+              </div>
+
+              <FormField control={form.control} name="restrictions" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Restricciones legales</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Especificar si hay restricciones legales" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="captador" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Captador</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Nombre del captador" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+            )} />
+                <FormField control={form.control} name="numberproperty" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Numero del Dueño</FormLabel>
+                  <FormControl>
+                    <Input placeholder="+505 8996 8455" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+            )} />
+
+              {/* Multimedia */}
+              <FormField control={form.control} name="videoUrl" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Video (Archivo)</FormLabel>
+                  <FormControl>
+                    <Input type="file" 
+                    accept="video/*"
+                    onChange={e => field.onChange(e.target.files?.[0])}/>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="floorPlan" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Plano de construcción (Imagen)</FormLabel>
+                  <FormControl>
+                    <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e => field.onChange(e.target.files?.[0])} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
               <FormField control={form.control} name="features" render={() => (
                 <FormItem>
                   <div className="mb-4">
@@ -475,29 +938,25 @@ async function saveDraft() {
                         key={feature.id}
                         control={form.control}
                         name="features"
-                        render={({ field }) => {
-                          return (
-                            <FormItem className="flex items-start space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(feature.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([...field.value || [], feature.id])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== feature.id
-                                          )
-                                        )
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal cursor-pointer">
-                                {feature.label}
-                              </FormLabel>
-                            </FormItem>
-                          )
-                        }}
+                        render={({ field }) => (
+                          <FormItem className="flex items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value?.includes(feature.id)}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([...field.value || [], feature.id])
+                                    : field.onChange(
+                                        field.value?.filter(value => value !== feature.id)
+                                      )
+                                }}
+                              />
+                            </FormControl>
+                            <FormLabel className="font-normal cursor-pointer">
+                              {feature.label}
+                            </FormLabel>
+                          </FormItem>
+                        )}
                       />
                     ))}
                   </div>
@@ -505,65 +964,69 @@ async function saveDraft() {
                 </FormItem>
               )} />
             </TabsContent>
-            
+
             <div className="flex justify-between pt-6 border-t">
               <Button type="button" variant="outline" onClick={saveDraft}>
                 <Save className="h-4 w-4 mr-2" />
                 Guardar borrador
               </Button>
-              
+
               <div className="space-x-2">
                 <Button 
                   variant="secondary" 
                   type="button" 
                   onClick={() => {
-                    if (activeTab === "information") return;
-                    if (activeTab === "location") setActiveTab("information");
-                    if (activeTab === "features") setActiveTab("location");
+                    if (activeTab === "general") return;
+                    if (activeTab === "location") setActiveTab("general");
+                    if (activeTab === "construction") setActiveTab("location");
+                    if (activeTab === "extras") setActiveTab("construction");
                   }}
-                  className={activeTab === "information" ? "hidden" : ""}
+                  className={activeTab === "general" ? "hidden" : ""}
                 >
                   Anterior
                 </Button>
-                
-                {activeTab !== "features" ? (
+
+                {activeTab !== "extras" ? (
                   <Button 
                     type="button" 
                     onClick={() => {
-                      if (activeTab === "information") setActiveTab("location");
-                      if (activeTab === "location") setActiveTab("features");
+                      if (activeTab === "general") setActiveTab("location");
+                      if (activeTab === "location") setActiveTab("construction");
+                      if (activeTab === "construction") setActiveTab("extras");
                     }}
                   >
                     Siguiente
                   </Button>
                 ) : (
-                    <Button 
+                  <Button 
                     type="submit" 
                     disabled={isLoading}
-                    >
+                  >
                     {isLoading ? (
-                        <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-2">
                         <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
                         Guardando...
-                        </span>
+                      </span>
                     ) : (
-                        <span className="flex items-center gap-2">
+                      <span className="flex items-center gap-2">
                         <Upload className="h-4 w-4" />
                         Enviar propiedad
-                        </span>
+                      </span>
                     )}
-                    </Button>
+                  </Button>
                 )}
-                </div>
+              </div>
             </div>
-            </form>
+          </form>
         </Form>
-        </Tabs>
+      </Tabs>
     </div>
-    );
+  );
 };
 
 export default PropertyForm;
+
+

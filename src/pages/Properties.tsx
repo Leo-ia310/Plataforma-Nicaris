@@ -66,31 +66,29 @@ const Properties = () => {
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const fetchProperties = async () => {
+    const fetchProperties = async () => {//https://script.google.com/macros/s/AKfycbztO2NQTdQAJ56OrI-i8XeoBLbqNFXHU1DD0zyPcwqiDgVlb0K04upvPGLsYuvuc4-wEw/exec/1z535l_nlwJ-G3AnE16cqGossy4yBe0Wx4sNkpJ6ecxE
       try {
         const response = await fetch('https://sheets.googleapis.com/v4/spreadsheets/1z535l_nlwJ-G3AnE16cqGossy4yBe0Wx4sNkpJ6ecxE/values/Backend2?key=AIzaSyBh30TBZk4lG-mAVfNe7cB8IzSaNvXZ77Q');
         const data = await response.json();
 
-        // Verificar si data.values es un array
         if (Array.isArray(data.values)) {
-          // Transformar los datos
           const transformedData = data.values.slice(1).map(property => ({
             id: property[0],
             title: property[1],
             description: property[2],
             location: `${property[3]}, ${property[4]}, ${property[5]}`,
-            price: parseFloat(property[6].replace(/[$,]/g, '')),
+            price: parseFloat(property[6].replace(/[$,]/g, '')) || 0,
             type: property[7],
             status: property[8],
-            bedrooms: parseInt(property[9], 10),
-            bathrooms: parseInt(property[10], 10),
-            area: parseInt(property[11], 10),
+            bedrooms: Number.isNaN(parseInt(property[9], 10)) ? null : parseInt(property[9], 10),
+            bathrooms: Number.isNaN(parseInt(property[10], 10)) ? null : parseInt(property[10], 10),
+            area: Number.isNaN(parseInt(property[11], 10)) ? null : parseInt(property[11], 10),
             features: property[12] ? property[12].split(',') : [],
-          images: property[18]
-          ? property[18]
-        .split('\n') // separar múltiples IDs por línea
-      .map(id => `https://www.googleapis.com/drive/v3/files/${id.trim()}?alt=media&key=AIzaSyBh30TBZk4lG-mAVfNe7cB8IzSaNvXZ77Q`)
-      : [],
+            images: property[19]
+              ? property[19]
+                .split('\n')
+                .map(id => `https://www.googleapis.com/drive/v3/files/${id.trim()}?alt=media&key=AIzaSyBh30TBZk4lG-mAVfNe7cB8IzSaNvXZ77Q`)//AIzaSyBh30TBZk4lG-mAVfNe7cB8IzSaNvXZ77Q
+              : [],
             createdAt: new Date().toISOString(),
           }));
 
@@ -140,7 +138,6 @@ const Properties = () => {
   // Aplicar filtros y ordenación
   let filteredProperties = [...propertiesData];
   
-  // Filtro por término de búsqueda
   if (searchTerm) {
     filteredProperties = filteredProperties.filter(
       property => property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -149,17 +146,14 @@ const Properties = () => {
     );
   }
   
-  // Filtro por tipo de propiedad
   if (typeFilter !== 'all') {
     filteredProperties = filteredProperties.filter(property => property.type === typeFilter);
   }
   
-  // Filtro por estado
   if (statusFilter !== 'all') {
     filteredProperties = filteredProperties.filter(property => property.status === statusFilter);
   }
   
-  // Ordenación
   filteredProperties.sort((a, b) => {
     switch (sortBy) {
       case 'date-desc':
@@ -179,7 +173,6 @@ const Properties = () => {
     }
   });
   
-  // Paginación
   const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
@@ -203,7 +196,6 @@ const Properties = () => {
             </Button>
           </div>
 
-          {/* Filtros */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div className="relative">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -258,7 +250,6 @@ const Properties = () => {
             </Select>
           </div>
 
-          {/* Resultados */}
           {paginatedProperties.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
@@ -276,7 +267,7 @@ const Properties = () => {
                               key={index}
                               src={image} 
                               alt={property.title}
-                              className="w-full max-h-48 h-auto object-cover mb-2" //w-full max-h-32 h-auto object-cover mb-2 //"w-full h-auto object-cover mb-2
+                              className="w-full max-h-48 h-auto object-cover mb-2"
                             />
                           ))}
                         </div>
@@ -310,21 +301,21 @@ const Properties = () => {
                       
                       <div className="flex items-center justify-between pt-3 border-t">
                         <div className="flex space-x-3 text-sm">
-                          {property.area && (
+                          {property.area && property.area > 0 && (
                             <div className="flex items-center">
                               <Building className="h-4 w-4 mr-1 text-gray-500" />
                               <span>{property.area} m²</span>
                             </div>
                           )}
                           
-                          {property.bedrooms && (
+                          {Number.isInteger(property.bedrooms) && property.bedrooms >= 0 && (
                             <div className="flex items-center">
                               <Bed className="h-4 w-4 mr-1 text-gray-500" />
                               <span>{property.bedrooms}</span>
                             </div>
                           )}
                           
-                          {property.bathrooms && (
+                          {Number.isInteger(property.bathrooms) && property.bathrooms >= 0 && (
                             <div className="flex items-center">
                               <Bath className="h-4 w-4 mr-1 text-gray-500" />
                               <span>{property.bathrooms}</span>
@@ -341,7 +332,6 @@ const Properties = () => {
                 ))}
               </div>
               
-              {/* Paginación */}
               {totalPages > 1 && (
                 <div className="flex justify-center mt-8">
                   <div className="flex items-center space-x-2">
