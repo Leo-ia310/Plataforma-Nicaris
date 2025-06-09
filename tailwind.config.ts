@@ -73,6 +73,7 @@ export default {
 					dark: '#333333',       // Casi negro para texto
 					light: '#FFFFFF',      // Blanco para fondos
 					muted: '#6B7280',      // Gris para texto secundario
+					greencustom:  '#3a5a1a',
 				}
 			},
 			borderRadius: {

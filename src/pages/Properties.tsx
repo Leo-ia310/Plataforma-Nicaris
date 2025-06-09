@@ -27,22 +27,23 @@ import {
   ChevronRight
 } from "lucide-react";
 
-// Tipos y mapas para filtrado y visualización
+// Tipos y mapas para filtrado y visualización, 'value' en español
 const propertyTypes = [
-  { value: 'all', label: 'Todos los tipos' },
-  { value: 'house', label: 'Casa' },
-  { value: 'apartment', label: 'Apartamento' },
-  { value: 'land', label: 'Terreno' },
-  { value: 'commercial', label: 'Local Comercial' },
+  { value: 'todos', label: 'Todos los tipos' },
+  { value: 'casa', label: 'Casa' },
+  { value: 'apartamento', label: 'Apartamento' },
+  { value: 'terreno', label: 'Terreno' },
+  { value: 'local comercial', label: 'Local Comercial' },
   { value: 'industrial', label: 'Industrial' },
-  { value: 'office', label: 'Oficina' },
+  { value: 'oficina', label: 'Oficina' },
+  { value: 'finca', label: 'Finca' }
 ];
 
 const propertyStatus = [
-  { value: 'all', label: 'Todos los estados' },
-  { value: 'new', label: 'Nuevo' },
-  { value: 'used', label: 'Usado' },
-  { value: 'construction', label: 'En construcción' },
+  { value: 'todos', label: 'Todos los estados' },
+  { value: 'nuevo', label: 'Nuevo' },
+  { value: 'usado', label: 'Usado' },
+  { value: 'en construcción', label: 'En construcción' },
 ];
 
 const sortOptions = [
@@ -59,8 +60,8 @@ const Properties = () => {
   
   const [propertiesData, setPropertiesData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('todos');
+  const [statusFilter, setStatusFilter] = useState('todos');
   const [sortBy, setSortBy] = useState('date-desc');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
@@ -78,12 +79,12 @@ const Properties = () => {
             description: property[2],
             location: `${property[3]}, ${property[4]}, ${property[5]}`,
             price: parseFloat(property[6].replace(/[$,]/g, '')) || 0,
-            type: property[7],
-            status: property[8],
+            type: property[7].toLowerCase(),      // Normalizamos a minúsculas para el filtro
+            status: property[8].toLowerCase(),    // Normalizamos a minúsculas para el filtro
             bedrooms: Number.isNaN(parseInt(property[9], 10)) ? null : parseInt(property[9], 10),
             bathrooms: Number.isNaN(parseInt(property[10], 10)) ? null : parseInt(property[10], 10),
             area: Number.isNaN(parseInt(property[11], 10)) ? null : parseInt(property[11], 10),
-            features: property[12] ? property[12].split(',') : [],
+            features: property[12] ? property[12].split(',').map(f => f.trim()) : [],
             images: property[19]
               ? property[19]
                 .split('\n')
@@ -105,9 +106,9 @@ const Properties = () => {
   }, []);
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('es-ES', {
+    return new Intl.NumberFormat('es-US', {
       style: 'currency',
-      currency: 'EUR',
+      currency: 'USD',
       maximumFractionDigits: 0,
     }).format(price);
   };
@@ -118,20 +119,20 @@ const Properties = () => {
   };
 
   const getStatusLabel = (status) => {
-    const propertyStatus = {
-      'new': 'Nuevo',
-      'used': 'Usado',
-      'construction': 'En construcción'
-    }[status];
+    const propertyStatusMap = {
+      'nuevo': 'Nuevo',
+      'usado': 'Usado',
+      'en construcción': 'En construcción'
+    };
     
-    return propertyStatus || status;
+    return propertyStatusMap[status] || status;
   };
 
   const getStatusColor = (status) => {
     return {
-      'new': 'bg-green-100 text-green-800 hover:bg-green-200',
-      'used': 'bg-blue-100 text-blue-800 hover:bg-blue-200',
-      'construction': 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+      'nuevo': 'bg-green-100 text-green-800 hover:bg-green-200',
+      'usado': 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+      'en construcción': 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
     }[status] || '';
   };
 
@@ -140,17 +141,18 @@ const Properties = () => {
   
   if (searchTerm) {
     filteredProperties = filteredProperties.filter(
-      property => property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                 property.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                 property.location.toLowerCase().includes(searchTerm.toLowerCase())
+      property => 
+        (property.title && property.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (property.description && property.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (property.location && property.location.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }
   
-  if (typeFilter !== 'all') {
+  if (typeFilter !== 'todos') {
     filteredProperties = filteredProperties.filter(property => property.type === typeFilter);
   }
   
-  if (statusFilter !== 'all') {
+  if (statusFilter !== 'todos') {
     filteredProperties = filteredProperties.filter(property => property.status === statusFilter);
   }
   
@@ -178,17 +180,21 @@ const Properties = () => {
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Sidebar />
-      <div className="lg:pl-64 min-h-screen">
-        <main className="p-6">
-          <div className="flex justify-between items-center mb-6">
+      <div className="lg:pl-64 min-h-screen max-w-7xl mx-auto px-6">
+        <main className="py-16">
+          <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Propiedades</h1>
-              <p className="text-gray-500">Gestiona y visualiza todas las propiedades</p>
+              <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
+                Propiedades
+              </h1>
+              <p className="text-gray-600 mt-2 max-w-xl">
+                Gestiona y visualiza todas las propiedades
+              </p>
             </div>
             <Button 
-              className="bg-realestate-primary" 
+              className="bg-black text-white hover:bg-gray-900 focus:ring-4 focus:ring-gray-300"
               onClick={() => navigate('/properties/new')}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -196,19 +202,22 @@ const Properties = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
             <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-3.5 h-5 w-5 text-gray-400 pointer-events-none" />
               <Input
                 placeholder="Buscar propiedades..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="pl-11 py-3 text-gray-700"
               />
             </div>
             
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger>
+            <Select value={typeFilter} onValueChange={(val) => { setTypeFilter(val); setCurrentPage(1); }}>
+              <SelectTrigger className="py-3">
                 <SelectValue placeholder="Tipo de propiedad" />
               </SelectTrigger>
               <SelectContent>
@@ -220,8 +229,8 @@ const Properties = () => {
               </SelectContent>
             </Select>
             
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
+            <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); setCurrentPage(1); }}>
+              <SelectTrigger className="py-3">
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
@@ -233,15 +242,15 @@ const Properties = () => {
               </SelectContent>
             </Select>
             
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger>
+            <Select value={sortBy} onValueChange={(val) => { setSortBy(val); setCurrentPage(1); }}>
+              <SelectTrigger className="py-3">
                 <SelectValue placeholder="Ordenar por" />
               </SelectTrigger>
               <SelectContent>
                 {sortOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     <div className="flex items-center">
-                      <ArrowUpDown className="h-3.5 w-3.5 mr-2" />
+                      <ArrowUpDown className="h-4 w-4 mr-2 text-gray-600" />
                       <span>{option.label}</span>
                     </div>
                   </SelectItem>
@@ -252,78 +261,73 @@ const Properties = () => {
 
           {paginatedProperties.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
                 {paginatedProperties.map((property) => (
                   <Card 
                     key={property.id}
-                    className="overflow-hidden transition-transform transform hover:scale-105 hover:shadow-lg cursor-pointer"
+                    className="overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-transform transform hover:scale-[1.02] cursor-pointer bg-white"
                     onClick={() => navigate(`/properties/${property.id}`)}
                   >
-                    <div className="relative h-48">
+                    <div className="relative h-48 overflow-hidden rounded-t-xl">
                       {property.images.length > 0 ? (
-                        <div className="flex flex-col">
-                          {property.images.map((image, index) => (
-                            <img 
-                              key={index}
-                              src={image} 
-                              alt={property.title}
-                              className="w-full max-h-48 h-auto object-cover mb-2"
-                            />
-                          ))}
-                        </div>
+                        <img 
+                          src={property.images[0]} 
+                          alt={property.title}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <span>No hay imagen disponible</span>
+                        <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm select-none">
+                          No hay imagen disponible
                         </div>
                       )}
-                      <div className="absolute top-2 right-2">
-                        <Badge className={getStatusColor(property.status)}>
+                      <div className="absolute top-3 right-3">
+                        <Badge className={`${getStatusColor(property.status)} px-3 py-1 rounded-full text-xs font-semibold`}>
                           {getStatusLabel(property.status)}
                         </Badge>
                       </div>
                     </div>
-                    <CardContent className="p-4 bg-gray-200">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold text-lg line-clamp-1">{property.title}</h3>
-                        <span className="font-bold text-realestate-primary">
+                    <CardContent className="p-5">
+                      <div className="flex justify-between items-start mb-3 ">
+                        <h3 className="font-semibold text-xl text-gray-900 truncate">{property.title}</h3>
+                        <span className="font-bold text-black">
                           {formatPrice(property.price)}
                         </span>
                       </div>
                       
-                      <div className="flex items-center text-gray-500 text-sm mb-2">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        <span>{property.location}</span>
+                      <div className="flex items-center text-gray-600 text-sm mb-3">
+                        <MapPin className="h-5 w-5 mr-2" />
+                        <span className="truncate">{property.location}</span>
                       </div>
                       
-                      <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                      <p className="text-gray-700 text-sm mb-5 line-clamp-3" title={property.description}>
                         {property.description}
                       </p>
                       
-                      <div className="flex items-center justify-between pt-3 border-t">
-                        <div className="flex space-x-3 text-sm">
+                      <div className="flex items-center justify-between border-t pt-3">
+                        <div className="flex space-x-6 text-sm text-gray-600">
                           {property.area && property.area > 0 && (
-                            <div className="flex items-center">
-                              <Building className="h-4 w-4 mr-1 text-gray-500" />
+                            <div className="flex items-center" title="Area">
+                              <Building className="h-5 w-5 mr-1" />
                               <span>{property.area} m²</span>
                             </div>
                           )}
                           
                           {Number.isInteger(property.bedrooms) && property.bedrooms >= 0 && (
-                            <div className="flex items-center">
-                              <Bed className="h-4 w-4 mr-1 text-gray-500" />
+                            <div className="flex items-center" title="Habitaciones">
+                              <Bed className="h-5 w-5 mr-1" />
                               <span>{property.bedrooms}</span>
                             </div>
                           )}
                           
                           {Number.isInteger(property.bathrooms) && property.bathrooms >= 0 && (
-                            <div className="flex items-center">
-                              <Bath className="h-4 w-4 mr-1 text-gray-500" />
+                            <div className="flex items-center" title="Baños">
+                              <Bath className="h-5 w-5 mr-1" />
                               <span>{property.bathrooms}</span>
                             </div>
                           )}
                         </div>
                         
-                        <Badge variant="outline">
+                        <Badge variant="outline" className="text-sm font-medium px-3 py-1 rounded">
                           {getPropertyTypeLabel(property.type)}
                         </Badge>
                       </div>
@@ -334,24 +338,25 @@ const Properties = () => {
               
               {totalPages > 1 && (
                 <div className="flex justify-center mt-8">
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-3 select-none">
                     <Button
                       variant="outline"
                       size="icon"
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
+                      aria-label="Página anterior"
                     >
-                      <ChevronLeft className="h-4 w-4" />
+                      <ChevronLeft className="h-5 w-5" />
                     </Button>
                     
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-2">
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                         <Button
                           key={page}
                           variant={currentPage === page ? "default" : "outline"}
                           size="sm"
                           onClick={() => setCurrentPage(page)}
-                          className={currentPage === page ? "bg-realestate-primary" : ""}
+                          aria-current={currentPage === page ? "page" : undefined}
                         >
                           {page}
                         </Button>
@@ -363,20 +368,23 @@ const Properties = () => {
                       size="icon"
                       onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                       disabled={currentPage === totalPages}
+                      aria-label="Página siguiente"
                     >
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-5 w-5" />
                     </Button>
                   </div>
                 </div>
               )}
             </>
           ) : (
-            <div className="text-center py-12">
-              <Building className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-xl font-medium text-gray-900 mb-2">No se encontraron propiedades</h3>
-              <p className="text-gray-500 mb-6">Prueba a cambiar los filtros o añade una nueva propiedad</p>
+            <div className="text-center py-20">
+              <Building className="h-16 w-16 mx-auto text-gray-300 mb-6" />
+              <h3 className="text-2xl font-semibold text-gray-900 mb-3">No se encontraron propiedades</h3>
+              <p className="text-gray-600 mb-8 max-w-sm mx-auto">
+                Prueba a cambiar los filtros o añade una nueva propiedad.
+              </p>
               <Button 
-                className="bg-realestate-primary" 
+                className="bg-black text-white hover:bg-gray-900"
                 onClick={() => navigate('/properties/new')}
               >
                 <Plus className="h-4 w-4 mr-2" />
