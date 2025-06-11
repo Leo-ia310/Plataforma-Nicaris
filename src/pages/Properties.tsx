@@ -85,11 +85,9 @@ const Properties = () => {
             bathrooms: Number.isNaN(parseInt(property[10], 10)) ? null : parseInt(property[10], 10),
             area: Number.isNaN(parseInt(property[11], 10)) ? null : parseInt(property[11], 10),
             features: property[12] ? property[12].split(',').map(f => f.trim()) : [],
-            images: property[19]
-              ? property[19]
-                .split('\n')
-                .map(id => `https://www.googleapis.com/drive/v3/files/${id.trim()}?alt=media&key=AIzaSyDqkyWiU-HicT3Z5ltVxomucHt671y0Tro`)
-              : [],
+            images: property[19] 
+            ? [property[19].trim()]  // solo un link único, dentro de un array
+            : [],
             createdAt: new Date().toISOString(),
           }));
 

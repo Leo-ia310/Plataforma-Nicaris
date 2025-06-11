@@ -101,8 +101,11 @@ const PropertyDetails: React.FC = () => {
               hasFences: row[16] === 'Sí',
               IDAP: row[17] || '',
               images: row[18]
-                ? row[18].split('\n').map(id => `https://www.googleapis.com/drive/v3/files/${id.trim()}?alt=media&key=${API_KEY}`)
-                : [],
+              ? row[18]
+              .split(/\s+/)                // separar por coma
+              .map(link => link.trim())  // limpiar espacios
+             .filter(link => link)      // quitar strings vacíos, si hay
+              : [],
               photo: row[19] || '',
               furniture: row[20] || '',
               hasCaretakerHouse: row[21] === 'Sí',
