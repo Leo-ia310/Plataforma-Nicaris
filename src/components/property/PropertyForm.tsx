@@ -343,111 +343,116 @@ const PropertyForm = () => {
 
   const showFarmFeatures = form.watch("propertyType") === "Finca";
 
-  return (
-    <div className="form-container mb-12">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-realestate-primary">Nueva Propiedad</h2>
-        <p className="text-sm text-gray-500">Complete los detalles de la propiedad para registrarla en el sistema</p>
-      </div>
+return (
+  <div className="form-container mb-12">
+    <div className="mb-6">
+      <h2 className="text-2xl font-bold text-realestate-primary">Nueva Propiedad</h2>
+      <p className="text-sm text-gray-500">Complete los detalles de la propiedad para registrarla en el sistema</p>
+    </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <TabsTrigger value="general" className="flex items-center gap-2 justify-center">
-            <FileText className="h-4 w-4" />
-            <span>Datos Generales</span>
-          </TabsTrigger>
-          <TabsTrigger value="location" className="flex items-center gap-2 justify-center">
-            <MapPin className="h-4 w-4" />
-            <span>Ubicación</span>
-          </TabsTrigger>
-          <TabsTrigger value="construction" className="flex items-center gap-2 justify-center">
-            <Building className="h-4 w-4" />
-            <span>Construcción & Terreno</span>
-          </TabsTrigger>
-          <TabsTrigger value="extras" className="flex items-center gap-2 justify-center">
-            <Droplet className="h-4 w-4" />
-            <span>Servicios & Extras</span>
-          </TabsTrigger>
-        </TabsList>
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-6">
+        <TabsTrigger value="general" className="flex items-center gap-2 justify-center">
+          <FileText className="h-4 w-4" />
+          <span>Datos Generales</span>
+        </TabsTrigger>
+        <TabsTrigger value="location" className="flex items-center gap-2 justify-center">
+          <MapPin className="h-4 w-4" />
+          <span>Ubicación</span>
+        </TabsTrigger>
+        <TabsTrigger value="construction" className="flex items-center gap-2 justify-center">
+          <Building className="h-4 w-4" />
+          <span>Construcción & Terreno</span>
+        </TabsTrigger>
+        <TabsTrigger value="extras" className="flex items-center gap-2 justify-center">
+          <Droplet className="h-4 w-4" />
+          <span>Servicios & Extras</span>
+        </TabsTrigger>
+      </TabsList>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Datos Generales */}
-            <TabsContent value="general" className="space-y-6">
-              <FormField control={form.control} name="title" render={({ field }) => (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Datos Generales */}
+          <TabsContent value="general" className="space-y-6 mt-16 sm:mt-8">
+            <FormField control={form.control} name="title" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Título de la propiedad</FormLabel>
+                <FormControl>
+                  <Input placeholder="Ej: Hermosa casa con jardín" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="description" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Descripción</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="Describe los aspectos más destacados de la propiedad..." className="min-h-32" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="price" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Precio ($)</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="150000" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField control={form.control} name="propertyType" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Título de la propiedad</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ej: Hermosa casa con jardín" {...field} />
-                  </FormControl>
+                  <FormLabel>Tipo de propiedad</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un tipo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {propertyTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )} />
-              <FormField control={form.control} name="description" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripción</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Describe los aspectos más destacados de la propiedad..." className="min-h-32" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="price" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Precio ($)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="150000" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField control={form.control} name="propertyType" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de propiedad</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona un tipo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {propertyTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="status" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estado</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona un estado" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {propertyStatus.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            {status.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </div>
-              <PropertyImageUpload onImagesChange={onImagesChange} />
-            </TabsContent>
 
-            {/* Ubicación */}
-            <TabsContent value="location" className="space-y-6">
+              <FormField control={form.control} name="status" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Estado</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {propertyStatus.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            <PropertyImageUpload onImagesChange={onImagesChange} />
+          </TabsContent>
+
+                    {/* Ubicación */}
+            <TabsContent value="location" className="space-y-6 mt-16 sm:mt-8">
               <FormField control={form.control} name="address" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Dirección</FormLabel>
@@ -457,6 +462,7 @@ const PropertyForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField control={form.control} name="city" render={({ field }) => (
                   <FormItem>
@@ -467,6 +473,7 @@ const PropertyForm = () => {
                     <FormMessage />
                   </FormItem>
                 )} />
+                
                 <FormField control={form.control} name="state" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Provincia</FormLabel>
@@ -478,9 +485,8 @@ const PropertyForm = () => {
                 )} />
               </div>
             </TabsContent>
-
-            {/* Construcción y Terreno */}
-            <TabsContent value="construction" className="space-y-6">
+                      {/* Construcción y Terreno */}
+            <TabsContent value="construction" className="space-y-6 mt-16 sm:mt-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField control={form.control} name="bedrooms" render={({ field }) => (
                   <FormItem>
@@ -510,7 +516,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               {showFarmFeatures && (
                 <div className="border p-4 rounded-md bg-amber-50 space-y-4">
                   <h3 className="font-medium text-amber-800">Características específicas para fincas</h3>
@@ -531,7 +537,7 @@ const PropertyForm = () => {
                   )} />
                 </div>
               )}
-
+            
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <FormField control={form.control} name="floors" render={({ field }) => (
                   <FormItem>
@@ -561,7 +567,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <FormField control={form.control} name="furniture" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Amueblado</FormLabel>
@@ -580,7 +586,7 @@ const PropertyForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
-
+            
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <FormField control={form.control} name="hasCaretakerHouse" render={({ field }) => (
                   <FormItem className="flex items-center space-x-2">
@@ -599,7 +605,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <FormField control={form.control} name="terrainType" render={({ field }) => (
                   <FormItem>
@@ -629,7 +635,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <FormField control={form.control} name="soilType" render={({ field }) => (
                   <FormItem>
@@ -653,7 +659,7 @@ const PropertyForm = () => {
             </TabsContent>
 
             {/* Servicios & Extras */}
-            <TabsContent value="extras" className="space-y-6">
+            <TabsContent value="extras" className="space-y-6 mt-16 sm:mt-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField control={form.control} name="mainCrops" render={({ field }) => (
                   <FormItem>
@@ -692,7 +698,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <FormField control={form.control} name="hasCattleInfrastructure" render={({ field }) => (
                   <FormItem className="flex items-center space-x-2">
@@ -712,7 +718,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <FormField control={form.control} name="waterForAnimals" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Agua para animales</FormLabel>
@@ -722,7 +728,7 @@ const PropertyForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
-
+            
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <FormField control={form.control} name="hasWater" render={({ field }) => (
                   <FormItem className="flex items-center space-x-2">
@@ -741,7 +747,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <FormField control={form.control} name="waterSource" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Fuente de agua</FormLabel>
@@ -751,7 +757,7 @@ const PropertyForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
-
+            
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <FormField control={form.control} name="internetAvailable" render={({ field }) => (
                   <FormItem className="flex items-center space-x-2">
@@ -770,7 +776,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <FormField control={form.control} name="mountainView" render={({ field }) => (
                   <FormItem className="flex items-center space-x-2">
@@ -805,7 +811,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <FormField control={form.control} name="gatedCommunity" render={({ field }) => (
                 <FormItem className="flex items-center space-x-2">
                   <FormControl>
@@ -830,7 +836,7 @@ const PropertyForm = () => {
                   <FormLabel>Zona turística</FormLabel>
                 </FormItem>
               )} />
-
+            
               {/* Documentación y legal */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <FormField control={form.control} name="hasDeed" render={({ field }) => (
@@ -850,7 +856,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <FormField control={form.control} name="propertyTaxStatus" render={({ field }) => (
                   <FormItem className="flex items-center space-x-2">
@@ -869,7 +875,7 @@ const PropertyForm = () => {
                   </FormItem>
                 )} />
               </div>
-
+            
               <FormField control={form.control} name="restrictions" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Restricciones legales</FormLabel>
@@ -879,7 +885,7 @@ const PropertyForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
-
+            
               <FormField control={form.control} name="captador" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Captador</FormLabel>
@@ -888,8 +894,9 @@ const PropertyForm = () => {
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-            )} />
-                <FormField control={form.control} name="numberproperty" render={({ field }) => (
+              )} />
+              
+              <FormField control={form.control} name="numberproperty" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Numero del Dueño</FormLabel>
                   <FormControl>
@@ -897,8 +904,8 @@ const PropertyForm = () => {
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-            )} />
-
+              )} />
+            
               {/* Multimedia */}
               <FormField control={form.control} name="videoUrl" render={({ field }) => (
                 <FormItem>
@@ -911,6 +918,7 @@ const PropertyForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
+              
               <FormField control={form.control} name="floorPlan" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Plano de construcción (Imagen)</FormLabel>
@@ -923,7 +931,7 @@ const PropertyForm = () => {
                   <FormMessage />
                 </FormItem>
               )} />
-
+            
               <FormField control={form.control} name="features" render={() => (
                 <FormItem>
                   <div className="mb-4">
@@ -964,6 +972,7 @@ const PropertyForm = () => {
                 </FormItem>
               )} />
             </TabsContent>
+
 
             <div className="flex justify-between pt-6 border-t">
               <Button type="button" variant="outline" onClick={saveDraft}>

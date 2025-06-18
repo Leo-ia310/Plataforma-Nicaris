@@ -182,7 +182,7 @@ const Properties = () => {
       <Sidebar />
       <div className="lg:pl-64 min-h-screen max-w-7xl mx-auto px-6">
         <main className="py-16">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
             <div>
               <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
                 Propiedades
@@ -192,7 +192,7 @@ const Properties = () => {
               </p>
             </div>
             <Button 
-              className="bg-black text-white hover:bg-gray-900 focus:ring-4 focus:ring-gray-300"
+              className="bg-black text-white hover:bg-gray-900 focus:ring-4 focus:ring-gray-300 mt-4 lg:mt-0"
               onClick={() => navigate('/properties/new')}
             >
               <Plus className="h-4 w-4 mr-2" />

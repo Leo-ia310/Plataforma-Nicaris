@@ -29,7 +29,7 @@ const propertyData = [
   { name: "Feb", value: 0 },
   { name: "Mar", value: 0 },
   { name: "Abr", value: 0 },
-  { name: "May", value: 0 },
+  { name: "May", value: 15 },
   { name: "Jun", value: 0 },
   { name: "Jul", value: 0 },
 ];
@@ -38,9 +38,9 @@ const visitsData = [
   { name: "Ene", value: 2 },
   { name: "Feb", value: 0 },
   { name: "Mar", value: 2},
-  { name: "Abr", value: 0 },
-  { name: "May", value: 0 },
-  { name: "Jun", value: 0 },
+  { name: "Abr", value: 1 },
+  { name: "May", value: 1 },
+  { name: "Jun", value: 3 },
   { name: "Jul", value: 0 },
 ];
 

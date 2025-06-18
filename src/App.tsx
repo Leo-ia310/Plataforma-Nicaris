@@ -13,6 +13,7 @@ import FAQ from "./pages/FAQ";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import PropertyDetails from "./pages/PropertyDetails";
+import Ranking from "./pages/Ranking";
 
 
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/properties/new" element={<PropertyNew />} />
           <Route path="/documents" element={<Documents />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/ranking" element={<Ranking/>} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

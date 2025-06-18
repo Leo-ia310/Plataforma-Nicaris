@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
+import { FaFire } from 'react-icons/fa';
 import { 
   LayoutDashboard, 
   Home, 
@@ -41,6 +42,12 @@ const SidebarLinks: SidebarLink[] = [
     label: "FAQ",
     path: "/faq",
     icon: <HelpCircle className="h-5 w-5" />,
+    allowedRoles: ["admin", "manager", "captador", "Vendedor"]
+  },
+  {
+    label: "Racha",
+    path: "/Ranking",
+    icon: <FaFire className="h-5 w-5 text-orange-500 animate-pulse" />,
     allowedRoles: ["admin", "manager", "captador", "Vendedor"]
   },
   //{
