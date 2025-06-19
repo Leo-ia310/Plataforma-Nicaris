@@ -80,8 +80,10 @@ const PropertyDetails: React.FC = () => {
         if (data.values && Array.isArray(data.values)) {
           // Transformar los datos
           const headers = data.values[0]; // Obtener los encabezados
-          const properties = data.values.slice(1).map(row => {
-            const property: Property = {
+          const properties = data.values.slice(1)
+            .filter(row => row[0] && row[6]) // id y price existen
+            .map(row => {
+          const property: Property = {
               id: row[0],
               title: row[1],
               description: row[2],

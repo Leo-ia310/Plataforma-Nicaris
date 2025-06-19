@@ -14,84 +14,21 @@ interface Captador {
   imagenUrl?: string;
 }
 
-const captadoresEjemplo: Captador[] = [
-  {
-    id: 1,
-    nombre: 'María López',
-    propiedades: 30,
-    racha: 10,
-    ultimaFecha: '2023-10-02',
-    email: 'maria.lopez@email.com',
-    telefono: '555-1234',
-    notas: 'nota que tiene que poner el usuario xd',
-    imagenUrl: 'https://ncbutzitffasxngkguzn.supabase.co/storage/v1/object/public/nicarismultimedia23//487036214_122102163248823069_3254347845318073507_n%20(2).jpg',
-  },
-  {
-    id: 2,
-    nombre: 'Juan Pérez',
-    propiedades: 25,
-    racha: 8,
-    ultimaFecha: '2023-10-01',
-    email: 'juan.perez@email.com',
-    telefono: '555-5678',
-    notas: 'nota que tiene que poner el usuario xd',
-    imagenUrl: 'https://ncbutzitffasxngkguzn.supabase.co/storage/v1/object/public/nicarismultimedia23//487036214_122102163248823069_3254347845318073507_n%20(2).jpg',
-  },
-  {
-    id: 3,
-    nombre: 'Ana García',
-    propiedades: 20,
-    racha: 7,
-    ultimaFecha: '2023-09-30',
-    email: 'ana.garcia@email.com',
-    telefono: '555-8765',
-    notas: 'nota que tiene que poner el usuario xd',
-    imagenUrl: 'https://ncbutzitffasxngkguzn.supabase.co/storage/v1/object/public/nicarismultimedia23//487036214_122102163248823069_3254347845318073507_n%20(2).jpg',
-  },
-  {
-    id: 4,
-    nombre: 'Luis Gómez',
-    propiedades: 18,
-    racha: 5,
-    ultimaFecha: '2023-10-01',
-    email: 'luis.gomez@email.com',
-    telefono: '555-4321',
-    notas: 'nota que tiene que poner el usuario xd',
-    imagenUrl: 'https://ncbutzitffasxngkguzn.supabase.co/storage/v1/object/public/nicarismultimedia23//487036214_122102163248823069_3254347845318073507_n%20(2).jpg',
-  },
-  {
-    id: 5,
-    nombre: 'Sofía Martínez',
-    propiedades: 16,
-    racha: 3,
-    ultimaFecha: '2023-09-29',
-    email: 'sofia.martinez@email.com',
-    telefono: '555-9876',
-    notas: 'nota que tiene que poner el usuario xd',
-    imagenUrl: 'https://ncbutzitffasxngkguzn.supabase.co/storage/v1/object/public/nicarismultimedia23//487036214_122102163248823069_3254347845318073507_n%20(2).jpg',
-  },
-];
-
 const topColors = [
-  'bg-yellow-400 text-black',
-  'bg-gray-400 text-black',
-  'bg-yellow-700 text-black',
+  'bg-yellow-600 text-black',
+  'bg-gray-700 text-black',
+  'bg-orange-700 text-black',
 ];
-
-const formatDate = (fechaStr: string): string => {
-  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
-  const d = new Date(fechaStr);
-  if (Number.isNaN(d.getTime())) return fechaStr;
-  return d.toLocaleDateString(undefined, options);
-};
 
 const emptyMedallasCount = 3;
 
 const Ranking: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedCaptador, setSelectedCaptador] = useState<Captador | null>(null);
-
+  const [captadores, setCaptadores] = useState<Captador[]>([]);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   useEffect(() => {
     const update = () => setIsMobile(window.innerWidth < 768);
@@ -114,7 +51,71 @@ const Ranking: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [selectedCaptador]);
 
-  const captadores = [...captadoresEjemplo].sort((a, b) => b.racha - a.racha);
+  const parseDate = (dateString: string): Date | null => {
+    if (!dateString) return null;
+    const partes = dateString.split('/');
+    if (partes.length !== 3) return null;
+    const [day, month, year] = partes.map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  const formatDate = (input: string | Date): string => {
+    const date = typeof input === 'string' ? parseDate(input) : input;
+    if (!date) return '';
+    const day = date.getDate();
+    const month = date.toLocaleString('es-ES', { month: 'long' });
+    const year = date.getFullYear();
+    return `${day} ${month}, ${year}`;
+  };
+
+useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      const response = await fetch(
+        'https://sheets.googleapis.com/v4/spreadsheets/1yDDRLL0K5SmoSKTQShqT_JGMYBxO7Bc483P9lvI2_ns/values/USER?key=AIzaSyDqkyWiU-HicT3Z5ltVxomucHt671y0Tro'
+      );
+      const data = await response.json();
+
+      if (Array.isArray(data.values)) {
+        // CORREGIDO: encadenar el sort al map y usar const
+        const transformedData: Captador[] = data.values.slice(1)
+          .map((property: any) => {
+            const ultimaFecha = parseDate(property[5]);
+            const fechaActual = parseDate(property[4]);
+            let racha = Number(property[3]) || 0;
+            const fallos = Number(property[10]) || 0;
+
+            return {
+              id: Number(property[0]),
+              nombre: property[1],
+              propiedades: Number(property[2]),
+              racha,
+              ultimaFecha: property[5],
+              fechaActual: formatDate(fechaActual),
+              email: property[6],
+              telefono: property[7],
+              notas: property[8],
+              imagenUrl: property[9],
+            };
+          })
+          // ORDENAR: primero por racha descendente, luego por propiedades descendente
+          .sort((a, b) => {
+            if (b.racha !== a.racha) {
+              return b.racha - a.racha;
+            }
+            return b.propiedades - a.propiedades;
+          });
+
+        setCaptadores(transformedData);
+      } else {
+        console.error('La respuesta no contiene un array en data.values:', data);
+      }
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    }
+  };
+  fetchProperties();
+}, []);
 
   const getIniciales = (nombreCompleto: string): string =>
     nombreCompleto
@@ -127,6 +128,48 @@ const Ranking: React.FC = () => {
   const handleSelect = (captador: Captador) => {
     setSelectedCaptador(captador);
   };
+
+  // Lógica para estilos y animaciones de la racha
+  const getRachaClasses = (racha: number) => {
+    if (racha === 0) {
+      return 'racha-gris';
+    } else if (racha >= 100) {
+      return 'racha-morada animate-fire-morado';
+    } else if (racha > 49) {
+      return 'racha-naranja animate-fire-naranja';
+    } else {
+      return 'racha-roja animate-fire-rojo';
+    }
+  };
+
+// Reemplaza la función renderFireIcon por esta versión:
+const renderFireIcon = (racha: number) => {
+  if (racha === 0) {
+    return (
+      <span className="racha-gris flex items-center">
+        <FaFire className="text-gray-400" aria-label="Sin racha" />
+      </span>
+    );
+  } else if (racha >= 100) {
+    return (
+      <span className="racha-morada animate-fire-morado flex items-center">
+        <FaFire className="text-purple-600 drop-shadow-lg" aria-label="Racha morada" />
+      </span>
+    );
+  } else if (racha > 49) {
+    return (
+      <span className="racha-naranja animate-fire-naranja flex items-center">
+        <FaFire className="text-orange-600 drop-shadow" aria-label="Racha intensa" />
+      </span>
+    );
+  } else {
+    return (
+      <span className="racha-roja animate-fire-rojo flex items-center">
+        <FaFire className="text-red-500" aria-label="Racha activa" />
+      </span>
+    );
+  }
+};
 
   const renderItem = (captador: Captador, index: number) => {
     const topStyle = topColors[index] || 'bg-white text-gray-900';
@@ -155,14 +198,14 @@ const Ranking: React.FC = () => {
             <p className="text-sm">
               Propiedades: <strong>{captador.propiedades}</strong>
             </p>
-            <p className="text-sm flex items-center">
-              <FaFire className="text-red-500 ml-1 mr-1" aria-hidden="true" />
+            <p className={`text-sm flex items-center gap-1 ${getRachaClasses(captador.racha)}`}>
+              {renderFireIcon(captador.racha)}
               <span className="font-semibold">{captador.racha} días</span>
               {captador.racha > 7 && (
                 <FaTrophy className="text-yellow-400 ml-2" aria-label="Trofeo por racha mayor a 7 días" />
               )}
             </p>
-            <p className="text-sm">Última subida: {formatDate(captador.ultimaFecha)}</p>
+            <p className="text-sm">Última subida:{formatDate(captador.ultimaFecha)}</p>
           </div>
         </div>
       );
@@ -190,8 +233,8 @@ const Ranking: React.FC = () => {
             <span>{captador.nombre}</span>
           </td>
           <td className="py-3 px-6 text-left">{captador.propiedades}</td>
-          <td className="py-3 px-6 text-left flex items-center">
-            <FaFire className="text-red-500 mr-2" aria-label="Icono de racha" />
+          <td className={`py-3 px-6 text-left flex items-center gap-1 ${getRachaClasses(captador.racha)}`}>
+            {renderFireIcon(captador.racha)}
             <span className="font-semibold">{captador.racha} días</span>
             {captador.racha > 7 && (
               <FaTrophy
@@ -276,9 +319,10 @@ const Ranking: React.FC = () => {
               <p>
                 <strong>Propiedades totales:</strong> {selectedCaptador.propiedades}
               </p>
-              <p className="flex items-center my-1">
-                <strong className="mr-1">Racha actual:</strong> {selectedCaptador.racha} días{' '}
-                <FaFire className="text-red-500 ml-1" />
+              <p className={`flex items-center my-1 gap-1 ${getRachaClasses(selectedCaptador.racha)}`}>
+                <strong className="mr-1">Racha actual:</strong>
+                {renderFireIcon(selectedCaptador.racha)}
+                {selectedCaptador.racha} días
                 {selectedCaptador.racha > 7 && (
                   <FaTrophy className="text-yellow-400 ml-2" aria-label="Trofeo por racha" />
                 )}
@@ -311,7 +355,7 @@ const Ranking: React.FC = () => {
                     .map((_, i) => (
                       <div
                         key={i}
-                        className="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-300 text-xl"
+                        className="w-10 h-10 rounded-full border-2 border-gray-500 flex items-center justify-center text-gray-500 text-xl"
                         title="Medalla vacía"
                       >
                         <FaMedal />
@@ -330,6 +374,39 @@ const Ranking: React.FC = () => {
               .animate-slideInFromRight {
                 animation: slideInFromRight 0.3s ease forwards;
               }
+              /* Animaciones y colores para la racha */
+              .racha-gris .fa-fire, .racha-gris svg {
+                color: #a3a3a3 !important;
+                opacity: 0.7;
+                filter: grayscale(1);
+              }
+              .racha-roja .fa-fire, .racha-roja svg {
+                color: #ef4444 !important;
+                animation: fireBlink 1s infinite alternate;
+                filter: drop-shadow(0 0 4px #ef4444);
+              }
+              .racha-naranja .fa-fire, .racha-naranja svg {
+                color: #f59e42 !important;
+                animation: firePulse 0.7s infinite alternate;
+                filter: drop-shadow(0 0 8px #f59e42);
+              }
+              .racha-morada .fa-fire, .racha-morada svg {
+                color: #a21caf !important;
+                animation: firePulseMorado 0.6s infinite alternate;
+                filter: drop-shadow(0 0 12px #a21caf);
+              }
+              @keyframes fireBlink {
+                0% { opacity: 1; transform: scale(1); }
+                100% { opacity: 0.5; transform: scale(1.15); }
+              }
+              @keyframes firePulse {
+                0% { opacity: 1; transform: scale(1); }
+                100% { opacity: 0.7; transform: scale(1.25) rotate(-8deg); }
+              }
+              @keyframes firePulseMorado {
+                0% { opacity: 1; transform: scale(1); }
+                100% { opacity: 0.8; transform: scale(1.35) rotate(8deg); }
+              }
             `}
           </style>
         </>
@@ -339,5 +416,3 @@ const Ranking: React.FC = () => {
 };
 
 export default Ranking;
-
-

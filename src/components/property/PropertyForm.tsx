@@ -28,6 +28,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Apple, Building, Droplet, Fence, FileText, MapPin, Save, Upload } from "lucide-react";
 import PropertyImageUpload from './PropertyImageUpload';
+import { Value } from "@radix-ui/react-select";
+import { Label } from "recharts";
 
 const propertySchema = z.object({
   title: z.string().min(5, { message: "El título debe tener al menos 5 caracteres" }),
@@ -79,12 +81,23 @@ const propertySchema = z.object({
   isBankFinancingAvailable: z.boolean().optional(),
   restrictions: z.string().optional(),
   photos: z.array(z.string()).optional(),
-  videoUrl: z.any().optional(),
-  floorPlan: z.any().optional(),
+  videoUrl: z.any(z.any()).optional(),
+  floorPlan: z.any(z.any()).optional(),
   features: z.array(z.string()).optional(),
   captador: z.string().min(1, { message: "Captador es requerido" }),
   numberproperty: z.string().min(1),
+  fecha: z.string().min(1, { message: "La fecha es obligatoria" }),
 });
+
+const captador = [
+  { value: "Marlon Castillo", label: "Marlon Castillo"},
+  { value: "Gabriel Cajina", label: "Gabriel Cajina"},
+  { value: "Kener Hernandez", label: "Kener Hernandez"},
+  { value: "Maikel Martinez", label: "Maikel Martinez"},
+  { value: "Samuel Issac", label: "Samuel Issac"},
+  { value: "Michael", label: "Michael"},
+
+]
 
 const propertyTypes = [
   { value: "Casa", label: "Casa" },
@@ -175,6 +188,7 @@ const PropertyForm = () => {
       features: [],
       captador: "",
       numberproperty: "",
+      fecha: "",
     },
   });
 
@@ -278,29 +292,36 @@ const PropertyForm = () => {
     formData.append('restrictions', values.restrictions || '');
     formData.append('numberproperty', values.numberproperty),
     formData.append('captador', values.captador);
+    formData.append('fecha', values.fecha);
     if (values.videoUrl instanceof File) {
-      const videoBase64 = await convertToBase64(values.videoUrl);
-    formData.append('videoUrl', videoBase64);
-    formData.append('videoFileName', values.videoUrl.name);
-    formData.append('videoMimeType', values.videoUrl.type);
-    } else {
+  if (Array.isArray(values.videoUrl) && values.videoUrl.length > 0) {
+      const videosBase64 = await Promise.all(values.videoUrl.map(convertToBase64));
+      const videoFileNames = values.videoUrl.map((file: File) => file.name);
+      const videoMimeTypes = values.videoUrl.map((file: File) => file.type);
+      formData.append('videoUrl', JSON.stringify(videosBase64));
+      formData.append('videoFileNames', JSON.stringify(videoFileNames));
+      formData.append('videoMimeTypes', JSON.stringify(videoMimeTypes));
+  } else {
     formData.append('videoUrl', '');
+}
     }
-    if (values.floorPlan instanceof File) {
-    const floorPlanBase64 = await convertToBase64(values.floorPlan);
-    formData.append('floorPlan', floorPlanBase64);
-    formData.append('floorPlanFileName', values.floorPlan.name);
-    formData.append('floorPlanMimeType', values.floorPlan.type);
-    } else {
+  if (Array.isArray(values.floorPlan) && values.floorPlan.length > 0) {
+    const floorPlansBase64 = await Promise.all(values.floorPlan.map(convertToBase64));
+    const floorPlanFileNames = values.floorPlan.map((file: File) => file.name);
+    const floorPlanMimeTypes = values.floorPlan.map((file: File) => file.type);
+    formData.append('floorPlan', JSON.stringify(floorPlansBase64));
+    formData.append('floorPlanFileNames', JSON.stringify(floorPlanFileNames));
+    formData.append('floorPlanMimeTypes', JSON.stringify(floorPlanMimeTypes));
+  } else {
     formData.append('floorPlan', '');
-    }
+  }
     formData.append('features', JSON.stringify(values.features));
     formData.append('images', JSON.stringify(imagesBase64));
     formData.append('mimeTypes', JSON.stringify(mimeTypes));
     formData.append('fileNames', JSON.stringify(fileNames));
 
     try {
-      const response = await fetch("https://script.google.com/macros/s/AKfycbwlPidagkYC5LpzGMc17GFzNQtuM2rDf10xQsZo7UeUMMXUu3ofGv73Heq1wyf1n2VLww/exec", {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbyqAugjEKo39lrNozFOAf9d9Ng3qmR2_bt2ti1AzQDu05c1KnQ4ZTWR-g2G-380FIpaWA/exec", {
         method: 'POST',
         body: formData,
       });
@@ -342,6 +363,12 @@ const PropertyForm = () => {
   }
 
   const showFarmFeatures = form.watch("propertyType") === "Finca";
+
+  function formatDateDMY(dateStr: string): string {
+  if (!dateStr) return '';
+  const [year, month, day] = dateStr.split('-');
+  return `${day}/${month}/${year}`;
+}
 
 return (
   <div className="form-container mb-12">
@@ -886,13 +913,40 @@ return (
                 </FormItem>
               )} />
             
+
               <FormField control={form.control} name="captador" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Captador</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nombre del captador" {...field} />
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un captador" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {captador.map((captador) => (
+                          <SelectItem key={captador.value} value={captador.value}>
+                            {captador.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )} />
+              
+              <FormField control={form.control} name="fecha" render={({ field }) => ( 
+                <FormItem>
+                  <FormLabel>Fecha <span className="text-red-500">*</span></FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                  {field.value && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      Fecha seleccionada: {formatDateDMY(field.value)}
+                    </div>
+                  )}
                 </FormItem>
               )} />
               
@@ -913,7 +967,8 @@ return (
                   <FormControl>
                     <Input type="file" 
                     accept="video/*"
-                    onChange={e => field.onChange(e.target.files?.[0])}/>
+                    multiple
+                    onChange={e => field.onChange(Array.from(e.target.files ?? []))}/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -926,7 +981,8 @@ return (
                     <input
                     type="file"
                     accept="image/*"
-                    onChange={e => field.onChange(e.target.files?.[0])} />
+                    multiple
+                    onChange={e => field.onChange(Array.from(e.target.files ?? []))}/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

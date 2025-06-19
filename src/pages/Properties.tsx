@@ -73,23 +73,25 @@ const Properties = () => {
         const data = await response.json();
 
         if (Array.isArray(data.values)) {
-          const transformedData = data.values.slice(1).map(property => ({
-            id: property[0],
-            title: property[1],
-            description: property[2],
-            location: `${property[3]}, ${property[4]}, ${property[5]}`,
-            price: parseFloat(property[6].replace(/[$,]/g, '')) || 0,
-            type: property[7].toLowerCase(),      // Normalizamos a minúsculas para el filtro
-            status: property[8].toLowerCase(),    // Normalizamos a minúsculas para el filtro
-            bedrooms: Number.isNaN(parseInt(property[9], 10)) ? null : parseInt(property[9], 10),
-            bathrooms: Number.isNaN(parseInt(property[10], 10)) ? null : parseInt(property[10], 10),
-            area: Number.isNaN(parseInt(property[11], 10)) ? null : parseInt(property[11], 10),
-            features: property[12] ? property[12].split(',').map(f => f.trim()) : [],
-            images: property[19] 
-            ? [property[19].trim()]  // solo un link único, dentro de un array
-            : [],
-            createdAt: new Date().toISOString(),
-          }));
+const transformedData = data.values.slice(1)
+  .filter(property => property[0] && property[1] && property[6]) // id, title y price existen
+  .map(property => ({
+    id: property[0],
+    title: property[1],
+    description: property[2],
+    location: `${property[3]}, ${property[4]}, ${property[5]}`,
+    price: property[6] ? parseFloat(property[6].replace(/[$,]/g, '')) : 0,
+    type: property[7] ? property[7].toLowerCase() : '',
+    status: property[8] ? property[8].toLowerCase() : '',
+    bedrooms: Number.isNaN(parseInt(property[9], 10)) ? null : parseInt(property[9], 10),
+    bathrooms: Number.isNaN(parseInt(property[10], 10)) ? null : parseInt(property[10], 10),
+    area: Number.isNaN(parseInt(property[11], 10)) ? null : parseInt(property[11], 10),
+    features: property[12] ? property[12].split(',').map(f => f.trim()) : [],
+    images: property[19] 
+      ? [property[19].trim()]
+      : [],
+    createdAt: new Date().toISOString(),
+  }));
 
           setPropertiesData(transformedData);
         } else {

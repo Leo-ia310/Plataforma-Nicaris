@@ -17,6 +17,7 @@ import Ranking from "./pages/Ranking";
 
 
 
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/faq" element={<FAQ />} />
           <Route path="/ranking" element={<Ranking/>} />
           <Route path="/settings" element={<Settings />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
