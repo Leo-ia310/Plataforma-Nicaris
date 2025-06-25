@@ -218,148 +218,269 @@ const PropertyDetails: React.FC = () => {
     });
   };
 
-  
-return (
-  <div className="min-h-screen flex flex-col">
-    <div className="bg-white pt-12 pb-5">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/properties" className="flex items-center gap-2 text-green-950">
-          <ArrowLeft size={18} />
-          Volver a propiedades
-        </Link>
-        <span className="bg-green-950 text-white px-4 py-1 rounded-full">{property.propertyType}</span>
-      </div>
-    </div>
 
-    <section className="py-12 bg-white">
-      <div className="container mx-auto">
-        <div className="flex justify-center">
-          <div className="bg-white w-full">
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Encabezado */}
+      <header className="bg-green-700 py-4 shadow-md">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center">
+            <Link 
+              to="/properties" 
+              className="flex items-center gap-2 text-white hover:text-gray-200 transition-colors"
+            >
+              <ArrowLeft size={18} />
+              <span className="font-medium">Volver a propiedades</span>
+            </Link>
+            <span className="bg-green-800 text-white px-4 py-1 rounded-full text-sm font-medium">
+              {property.propertyType}
+            </span>
+          </div>
+        </div>
+      </header>
+
+      {/* Contenido principal */}
+      <main className="flex-grow py-8">
+        <div className="container mx-auto px-4">
+          {/* Contenedor de la propiedad */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             {/* Galería de imágenes */}
-            <div className="relative w-full h-64 rounded-lg overflow-hidden mb-3">
-              {property.images.map((image, idx) => (
-                <div key={idx} className={`absolute inset-0 transition-opacity duration-300 ${idx === activeImage ? 'opacity-100' : 'opacity-0'}`}>
-                  <img src={image} alt={`Imagen ${idx + 1}`} className="w-full h-full object-cover" />
+            <div className="relative">
+              <div className="relative h-80 w-full overflow-hidden">
+                {property.images.map((image, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${idx === activeImage ? 'opacity-100' : 'opacity-0'}`}
+                  >
+                    <img 
+                      src={image} 
+                      alt={`Imagen ${idx + 1}`} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Miniaturas */}
+              <div className="flex gap-2 p-4 overflow-x-auto scrollbar-hide">
+                {property.images.map((image, idx) => (
+                  <button 
+                    key={idx} 
+                    onClick={() => setActiveImage(idx)}
+                    className={`flex-shrink-0 w-20 h-16 rounded-md overflow-hidden border-2 transition-all ${idx === activeImage ? 'border-green-700 scale-105' : 'border-transparent'}`}
+                  >
+                    <img 
+                      src={image} 
+                      alt={`Miniatura ${idx + 1}`} 
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Información principal */}
+            <div className="p-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{property.title}</h1>
+              
+              <div className="flex items-center gap-2 text-gray-600 mb-6">
+                <MapPin size={18} className="text-green-700" />
+                <span>{property.address}, {property.city}, {property.state}</span>
+              </div>
+
+              {/* Precio */}
+              <div className="mb-8">
+                <p className="text-2xl font-bold text-green-700">${property.price.toLocaleString()}</p>
+                {property.pricePerManzana && (
+                  <p className="text-sm text-gray-500">${property.pricePerManzana.toLocaleString()} por manzana</p>
+                )}
+              </div>
+            {/* Características principales */}
+<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+  <div className="bg-gray-50 p-3 rounded-lg">
+    <div className="flex items-center gap-2 text-gray-700">
+      <Ruler size={16} className="text-green-700" />
+      <span className="font-medium">{property.area} m²</span>
+    </div>
+  </div>
+  
+  <div className="bg-gray-50 p-3 rounded-lg">
+    <div className="flex items-center gap-2 text-gray-700">
+      <Home size={16} className="text-green-700" />
+      <span className="font-medium">{property.status}</span>
+    </div>
+  </div>
+  
+  {property.bedrooms && (
+    <div className="bg-gray-50 p-3 rounded-lg">
+      <p className="text-gray-700">
+        <span className="font-medium">Habitaciones:</span> {property.bedrooms}
+      </p>
+    </div>
+  )}
+  
+  {property.bathrooms && (
+    <div className="bg-gray-50 p-3 rounded-lg">
+      <p className="text-gray-700">
+        <span className="font-medium">Baños:</span> {property.bathrooms}
+      </p>
+    </div>
+  )}
+  
+  {property.manzanas && (
+    <div className="bg-gray-50 p-3 rounded-lg">
+      <p className="text-gray-700">
+        <span className="font-medium">Manzanas:</span> {property.manzanas}
+      </p>
+    </div>
+  )}
+  
+  {property.furniture && (
+    <div className="bg-gray-50 p-3 rounded-lg">
+      <p className="text-gray-700">
+        <span className="font-medium">Muebles:</span> {property.furniture}
+      </p>
+    </div>
+  )}
+</div>
+
+{/* Descripción */}
+<div className="mb-8">
+  <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Descripción</h2>
+  <p className="text-gray-700 leading-relaxed">{property.description}</p>
+</div>
+
+{/* Características del terreno */}
+<div className="mb-8">
+  <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">🏞️ Características del terreno</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <ul className="space-y-2">
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Tipo de suelo:</strong> {property.soilType}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Uso de la tierra:</strong> {property.landUse}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Cultivos principales:</strong> {property.mainCrops}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Árboles cítricos:</strong> {property.citrusTrees}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Árboles frutales:</strong> {property.fruitTrees}</span>
+      </li>
+    </ul>
+    
+    <ul className="space-y-2">
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Sistema de riego:</strong> {property.irrigationSystem}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Infraestructura ganadera:</strong> {property.hasCattleInfrastructure ? 'Sí' : 'No'}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Tipo de pasto:</strong> {property.pastureType}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Vista a la montaña:</strong> {property.mountainView ? 'Sí' : 'No'}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Vista al océano:</strong> {property.oceanView ? 'Sí' : 'No'}</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+{/* Servicios y facilidades */}
+<div className="mb-8">
+  <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">⚙️ Servicios y facilidades</h2>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <ul className="space-y-2">
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Agua para animales:</strong> {property.waterForAnimals ? 'Sí' : 'No'}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Electricidad:</strong> {property.hasElectricity ? 'Sí' : 'No'}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Internet:</strong> {property.internetAvailable ? 'Sí' : 'No'}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Tanque séptico:</strong> {property.hasSepticTank ? 'Sí' : 'No'}</span>
+      </li>
+    </ul>
+    
+    <ul className="space-y-2">
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Comunidad cerrada:</strong> {property.gatedCommunity ? 'Sí' : 'No'}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Zona segura:</strong> {property.isInSafeZone ? 'Sí' : 'No'}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Escritura:</strong> {property.hasDeed ? 'Sí' : 'No'}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Plano:</strong> {property.hasSurvey ? 'Sí' : 'No'}</span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-2 h-2 bg-green-700 rounded-full mt-2 mr-2"></span>
+        <span className="text-gray-700"><strong>Financiamiento bancario:</strong> {property.isBankFinancingAvailable ? 'Sí' : 'No'}</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+              {/* Mapa de ubicación */}
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">📍 Ubicación</h2>
+                <div className="bg-gray-100 h-64 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-500">Mapa de ubicación no disponible en este momento</p>
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {property.images.map((image, idx) => (
-                <button key={idx} onClick={() => setActiveImage(idx)} className={`flex-shrink-0 w-24 h-16 rounded overflow-hidden border-2 ${idx === activeImage ? 'border-green-950' : 'border-transparent'}`}>
-                  <img src={image} alt={`Miniatura ${idx + 1}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+              </div>
 
-            {/* Título y ubicación */}
-            <h1 className="text-3xl font-bold mb-3">{property.title}</h1>
-            <div className="flex items-center gap-1 text-gray-950">
-              <MapPin size={18} className="text-brown-950" />
-              <span>{property.address}, {property.city}, {property.state}</span>
-            </div>
-
-            {/* Detalles de la propiedad */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-lg">
-                <Ruler size={18} className="text-green-950" />
-                <p className="font-medium">{property.area} m²</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg">
-                <Home size={18} className="text-green-950" />
-                <p className="font-medium">{property.status}</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg">
-                <p className="font-bold text-green-950 text-xl">${property.price.toLocaleString()}</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg">
-                <p className="text-gray-950">Habitaciones: {property.bedrooms}</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg">
-                <p className="text-gray-950">Baños: {property.bathrooms}</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg">
-                <p className="text-gray-950">Manzanas: {property.manzanas}</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg">
-                <p className="text-gray-950">Precio por manzana: ${property.pricePerManzana.toLocaleString()}</p>
-              </div>
-              <div className="bg-white p-4 rounded-lg">
-                <p className="text-gray-950">Muebles: {property.furniture}</p>
-              </div>
-            </div>
-
-            {/* Descripción */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-3">Descripción</h2>
-              <p>{property.description}</p>
-            </div>
-
-            {/* Características del terreno */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-3">🏞️ Características del terreno</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ul className="list-disc pl-5 text-green-950">
-                  <li>Tipo de suelo: {property.soilType}</li>
-                  <li>Uso de la tierra: {property.landUse}</li>
-                  <li>Cultivos principales: {property.mainCrops}</li>
-                  <li>Árboles cítricos: {property.citrusTrees}</li>
-                  <li>Árboles frutales: {property.fruitTrees}</li>
-                </ul>
-                <ul className="list-disc pl-5 text-green-950">
-                  <li>Sistema de riego: {property.irrigationSystem}</li>
-                  <li>Tiene infraestructura ganadera: {property.hasCattleInfrastructure ? 'Sí' : 'No'}</li>
-                  <li>Tipo de pasto: {property.pastureType}</li>
-                  <li>Vista a la montaña: {property.mountainView ? 'Sí' : 'No'}</li>
-                  <li>Vista al océano: {property.oceanView ? 'Sí' : 'No'}</li>
-                  <li>Acceso al río: {property.riverAccess ? 'Sí' : 'No'}</li>
-                  <li>Acceso al lago: {property.lakeAccess ? 'Sí' : 'No'}</li>
-                  <li>Área turística: {property.touristArea ? 'Sí' : 'No'}</li>
-                  <li>Restricciones: {property.restrictions}</li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Servicios y facilidades */}
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-3">⚙️ Servicios y facilidades</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ul className="list-disc pl-5 text-green-950">
-                  <li>Agua para animales: {property.waterForAnimals ? 'Sí' : 'No'}</li>
-                  <li>Tiene electricidad: {property.hasElectricity ? 'Sí' : 'No'}</li>
-                  <li>Internet disponible: {property.internetAvailable ? 'Sí' : 'No'}</li>
-                </ul>
-                <ul className="list-disc pl-5 text-green-950">
-                  <li>Tiene tanque séptico: {property.hasSepticTank ? 'Sí' : 'No'}</li>
-                  <li>Comunidad cerrada: {property.gatedCommunity ? 'Sí' : 'No'}</li>
-                  <li>Está en zona segura: {property.isInSafeZone ? 'Sí' : 'No'}</li>
-                  <li>Tiene escritura: {property.hasDeed ? 'Sí' : 'No'}</li>
-                  <li>Tiene plano: {property.hasSurvey ? 'Sí' : 'No'}</li>
-                  <li>Estado del impuesto a la propiedad: {property.propertyTaxStatus}</li>
-                  <li>Está disponible financiamiento bancario: {property.isBankFinancingAvailable ? 'Sí' : 'No'}</li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Mapa de ubicación */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-3">Ubicación</h2>
-              <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center">
-                <p>Mapa de ubicación no disponible en este momento</p>
-              </div>
-            </div>
-              {/* Botones de acción */}
-              <div className="flex justify-between mt-8">
-                <button  onClick={copyInformation} className="btn-primary">
+              {/* Botón de acción */}
+              <div className="flex justify-center mt-8">
+                <button 
+                  onClick={copyInformation}
+                  className="bg-green-700 hover:bg-green-800 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md"
+                >
                   Copiar Información
                 </button>
               </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-  </div>
-);
+      </main>
 
+      {/* Pie de página */}
+      <footer className="bg-green-800 py-6 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <p>© {new Date().getFullYear()} Nicaris Bienes Raíces - Todos los derechos reservados</p>
+        </div>
+      </footer>
+    </div>
+  );
 };
 
 export default PropertyDetails;
