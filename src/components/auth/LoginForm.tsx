@@ -27,6 +27,7 @@ const USUARIOS_PREDEFINIDOS = [
   { email: 'Leonelalfonso@Nicaris.com', password: 'Leofonso632', name: 'Leito', role: 'captador' },
   { email: 'EmelyDanissa@Nicaris.com', password: 'EmelyDanissa231', name: 'Administradora', role: 'admin' },
   { email: 'Andres@Nicaris.com', password: 'Andres2341', name: 'Andres Captador', role: 'captador' },
+  { email: 'Victor@Nicaris.com', password: 'Victor3165', name: 'Victor Captador', role: 'captador' },
 ];
 
 const formSchema = z.object({
